@@ -27,7 +27,7 @@
 #define TPLL_TX_FIFO_DEP                         2   // fifo num = 2^FIFO_DEP
 #define TPLL_TX_FIFO_SIZE                        128 /** The size of the transmission first-in, first-out buffer */
 #define TPLL_TX_FIFO_NUM                         4   /** The number of the transmission first-in, first-out buffer */
-#define TPLL_PIPE_RX_FIFO_SIZE                   256 // must be >= 256 if use TPLL_MODE_GENERIC_FORMAT in TL321X
+#define TPLL_PIPE_RX_FIFO_SIZE                   128
 #define TPLL_PIPE_RX_FIFO_NUM                    4
 
 #define TPLL_MAX_LEGACY_VARIABLE_PAYLOAD_LENGTH  63                        /** The maximum size of the payload */
@@ -41,7 +41,7 @@
 #define TPLL_ERROR_BUFFER_EMPTY                  (TPLL_ERROR_BASE_NUM + 5) /** FIFO is empty */
 #define TPLL_ERROR_NO_MEM                        (TPLL_ERROR_BASE_NUM + 6) /** No Memory for operation */
 #define TPLL_ERROR_INVALID_LENGTH                (TPLL_ERROR_BASE_NUM + 7) /** Invalid Length */
-
+#define TPLL_HP_MODE_EN 0  // used by tpll.c and tl_tpll.c
 /**@brief Telink primary link layer mode. */
 typedef enum
 {
@@ -71,6 +71,9 @@ typedef struct
     signed char   rx_rssi;
     unsigned char rx_pipe;
     unsigned char crc_len;
+    unsigned char pid;
+    unsigned char crc;
+    unsigned char noack;
 } TPLL_ReadRxPayload_t;
 
 /**
@@ -102,6 +105,8 @@ typedef enum
 {
     TPLL_BITRATE_1MBPS = 0, /**< 1Mbit radio mode. */
     TPLL_BITRATE_2MBPS,     /**< 2Mbit radio mode. */
+    TPLL_BITRATE_4MBPS,     /**< 4Mbit radio mode. */
+    TPLL_BITRATE_6MBPS,     /**< 6Mbit radio mode. */
     TPLL_BITRATE_500kBPS,   /**< 500kbit radio mode. */
     TPLL_BITRATE_250KBPS,   /**< 250Kbit radio mode. */
 } TPLL_BitrateTypeDef;
@@ -112,60 +117,64 @@ typedef enum
  typedef enum
  {
      /*VBAT*/
-     TPLL_POWER_INDEX_P11p3dBm, /**<  11.3 dbm */
-     TPLL_POWER_INDEX_P11p1dBm, /**<  11.1 dbm */
-     TPLL_POWER_INDEX_P10p8dBm, /**<  10.8 dbm */
-     TPLL_POWER_INDEX_P10p5dBm, /**<  10.5 dbm */
-     TPLL_POWER_INDEX_P10p0dBm, /**<  10.0 dbm */
-     TPLL_POWER_INDEX_P9p5dBm,  /**<  9.5 dbm */
-     TPLL_POWER_INDEX_P9p0dBm,  /**<  9.0 dbm */
-     TPLL_POWER_INDEX_P8p4dBm,  /**<  8.4 dbm */
-     TPLL_POWER_INDEX_P8p0dBm,  /**<  8.0 dbm */
-     TPLL_POWER_INDEX_P7p6dBm,  /**<  7.6 dbm */
-     TPLL_POWER_INDEX_P7p2dBm,  /**<  7.2 dbm */
-     TPLL_POWER_INDEX_P7p0dBm,  /**<  7.0 dbm */
-     TPLL_POWER_INDEX_P6p5dBm,  /**<  6.5 dbm */
-     TPLL_POWER_INDEX_P6p0dBm,  /**<  6.0 dbm */
+     TPLL_POWER_INDEX_P10p00dBm  , /**<  10.0 dbm */
+     TPLL_POWER_INDEX_P9p50dBm   , /**<  9.5 dbm */
+     TPLL_POWER_INDEX_P9p00dBm   , /**<  9.0 dbm */
+     TPLL_POWER_INDEX_P8p50dBm   , /**<  8.5 dbm */
+     TPLL_POWER_INDEX_P8p00dBm   , /**<  8.0 dbm */
+     TPLL_POWER_INDEX_P7p50dBm   , /**<  7.5 dbm */
+     TPLL_POWER_INDEX_P7p00dBm   , /**<  7.0 dbm */
+     TPLL_POWER_INDEX_P6p50dBm   , /**<  6.5 dbm */
+     TPLL_POWER_INDEX_P6p00dBm   , /**<  6.0 dbm */
+     TPLL_POWER_INDEX_P5p50dBm   , /**<  5.5 dbm */
+     TPLL_POWER_INDEX_P5p00dBm   , /**<  5.0 dbm */
 
      /*VANT*/
-     TPLL_POWER_INDEX_P5p9dBm,  /**<   5.9 dbm */
-     TPLL_POWER_INDEX_P5p5dBm,  /**<   5.5 dbm */
-     TPLL_POWER_INDEX_P5p2dBm,  /**<   5.2 dbm */
-     TPLL_POWER_INDEX_P5p1dBm,  /**<   5.1 dbm */
-     TPLL_POWER_INDEX_P5p0dBm,  /**<   5.0 dbm */
-     TPLL_POWER_INDEX_P4p7dBm,  /**<   4.7 dbm */
-     TPLL_POWER_INDEX_P4p5dBm,  /**<   4.5 dbm */
-     TPLL_POWER_INDEX_P4p0dBm,  /**<   4.0 dbm */
-     TPLL_POWER_INDEX_P3p5dBm,  /**<   3.5 dbm */
-     TPLL_POWER_INDEX_P3p0dBm,  /**<   3.0 dbm */
-     TPLL_POWER_INDEX_P2p5dBm,  /**<   2.5 dbm */
-     TPLL_POWER_INDEX_P2p0dBm,  /**<   2.0 dbm */
-     TPLL_POWER_INDEX_P1p6dBm,  /**<   1.6 dbm */
-     TPLL_POWER_INDEX_P1p2dBm,  /**<   1.2 dbm */
-     TPLL_POWER_INDEX_P0p9dBm,  /**<   0.9 dbm */
-     TPLL_POWER_INDEX_P0p6dBm,  /**<   0.6 dbm */
-     TPLL_POWER_INDEX_P0p3dBm,  /**<   0.3 dbm */
-     TPLL_POWER_INDEX_P0p0dBm,  /**<   0.0 dbm */
-     TPLL_POWER_INDEX_N0p2dBm,  /**<   -0.2 dbm */
-     TPLL_POWER_INDEX_N0p5dBm,  /**<   -0.5 dbm */
-     TPLL_POWER_INDEX_N1p2dBm,  /**<   -1.2 dbm */
-     TPLL_POWER_INDEX_N1p6dBm,  /**<   -1.6 dbm */
-     TPLL_POWER_INDEX_N2p0dBm,  /**<  -2.0 dbm */
-     TPLL_POWER_INDEX_N2p8dBm,  /**<  -2.8 dbm */
-     TPLL_POWER_INDEX_N3p3dBm,  /**<  -3.3 dbm */
-     TPLL_POWER_INDEX_N4p4dBm,  /**<  -4.4 dbm */
-     TPLL_POWER_INDEX_N4p9dBm,  /**<  -4.9 dbm */
-     TPLL_POWER_INDEX_N5p6dBm,  /**<  -5.6 dbm */
-     TPLL_POWER_INDEX_N6p2dBm,  /**<  -6.2 dbm */
-     TPLL_POWER_INDEX_N7p8dBm,  /**<  -7.8 dbm */
-     TPLL_POWER_INDEX_N8p8dBm,  /**<  -8.8 dbm */
-     TPLL_POWER_INDEX_N9p9dBm,  /**<  -9.9 dbm */
-     TPLL_POWER_INDEX_N11p3dBm, /**<  -11.3 dbm */
-     TPLL_POWER_INDEX_N12p6dBm, /**<  -12.6 dbm */
-     TPLL_POWER_INDEX_N14p6dBm, /**<  -14.6 dbm */
-     TPLL_POWER_INDEX_N20p0dBm, /**<  -20.0 dbm */
-     TPLL_POWER_INDEX_N25p5dBm, /**<  -25.5 dbm */
-     TPLL_POWER_INDEX_N50p2dBm, /**<  -50.2 dbm */
+     TPLL_POWER_INDEX_P4p50dBm   ,  /**<   4.5 dbm */
+     TPLL_POWER_INDEX_P4p00dBm   ,  /**<   4.0 dbm */
+     TPLL_POWER_INDEX_P3p50dBm   ,  /**<   3.5 dbm */
+     TPLL_POWER_INDEX_P3p00dBm   ,  /**<   3.0 dbm */
+     TPLL_POWER_INDEX_P2p50dBm   ,  /**<   2.5 dbm */
+     TPLL_POWER_INDEX_P2p00dBm   ,  /**<   2.0 dbm */
+     TPLL_POWER_INDEX_P1p50dBm   ,  /**<   1.5 dbm */
+     TPLL_POWER_INDEX_P1p00dBm   ,  /**<   1.0 dbm */
+     TPLL_POWER_INDEX_P0p50dBm   ,  /**<   0.5 dbm */
+     TPLL_POWER_INDEX_P0p30dBm   ,  /**<   0.3 dbm */
+     TPLL_POWER_INDEX_P0p00dBm   ,  /**<   0.0 dbm */
+     TPLL_POWER_INDEX_N0p30dBm   ,  /**<  -0.3 dbm */
+     TPLL_POWER_INDEX_N0p50dBm   ,  /**<  -0.5 dbm */
+     TPLL_POWER_INDEX_N0p80dBm   ,  /**<  -0.8 dbm */
+     TPLL_POWER_INDEX_N1p50dBm   ,  /**<  -1.5 dbm */
+     TPLL_POWER_INDEX_N2p00dBm   ,  /**<  -2.0 dbm */
+     TPLL_POWER_INDEX_N2p50dBm   ,  /**<  -2.5 dbm */
+     TPLL_POWER_INDEX_N3p00dBm   ,  /**<  -3.0 dbm */
+     TPLL_POWER_INDEX_N3p50dBm   ,  /**<  -3.5 dbm */
+     TPLL_POWER_INDEX_N4p00dBm   ,  /**<  -4.0 dbm */
+     TPLL_POWER_INDEX_N4p70dBm   ,  /**<  -4.7 dbm */
+     TPLL_POWER_INDEX_N5p50dBm   ,  /**<  -5.5 dbm */
+     TPLL_POWER_INDEX_N6p20dBm   ,  /**<  -6.2 dbm */
+     TPLL_POWER_INDEX_N7p00dBm   , /**<  -7.0 dbm */
+     TPLL_POWER_INDEX_N8p00dBm   , /**<  -8.0 dbm */
+     TPLL_POWER_INDEX_N9p00dBm   , /**<  -9.0 dbm */
+     TPLL_POWER_INDEX_N10p30dBm  , /**<  -10.3 dbm */
+     TPLL_POWER_INDEX_N12p00dBm  ,  /**<  -12.0 dbm */
+     TPLL_POWER_INDEX_N13p60dBm  ,  /**<  -13.6 bm */
+     TPLL_POWER_INDEX_N16p30dBm  ,  /**<  -16.3 dbm */
+     TPLL_POWER_INDEX_N19p40dBm  ,  /**<  -19.4 dbm */
+     TPLL_POWER_INDEX_N25p20dBm  ,  /**<  -25.2 dbm */
+     TPLL_POWER_INDEX_N40p00dBm  ,  /**<  -40.0 dbm */
+ /*
+  * The following power scenarios adopt VANT mode to reduce TX power consumption while sustaining high output power.
+  * When using the following VANT power levels,
+  * call the rf_set_vant_power_trim_level interface to adjust the voltage
+  * both before and after toggling the TX switch.
+  * This configuration calling method can ensure an increase in power while limiting additional power consumption.
+  * For detailed implementation, refer to the invocation example of rf_set_vant1p05_power_trim_vol_up in the RF_Demo project.
+  */
+     TPLL_POWER_INDEX_P6p40 ,  /**<   6.4 dbm */
+     TPLL_POWER_INDEX_P6p00 ,  /**<   6.0 dbm */
+     TPLL_POWER_INDEX_P5p50 ,  /**<   5.5 dbm */
+     TPLL_POWER_INDEX_P5p00 ,  /**<   5.0 dbm */
  } tpll_radio_power_t;
 
 
@@ -672,6 +681,7 @@ void TPLL_PrxCrcCheckEnable(unsigned char enable);
  * @return  none.
  */
 void TPLL_PtxPrxAckEnable(unsigned char Enable);
+
 /**
  * @brief   This function serve to change payload bit order.
  * @param[in]   1: MSBit (Most Significant Bit) of the LSByte (Least Significant Byte) first
@@ -679,4 +689,97 @@ void TPLL_PtxPrxAckEnable(unsigned char Enable);
  * @return  none.
  */
 void TPLL_PlayloadBitOrder(unsigned char bitorder);
-    
+
+/**
+ * @brief       This function serves to trim deep retention LDO voltage in 0.65V for TPLL
+ * @param[in]   ret_ldo_trim - deep retention LDO trim voltage
+ * @return      none
+ */
+void TPLL_set_lowest_ret_ldo_voltage(void);
+
+/**
+ * @brief       This function serves to set fast settle function for tpll
+ * @param[in]   tx_fs_time_val - tx fast settle time value(e.g.,TX_SETTLE_TIME_15US,TX_SETTLE_TIME_51US,TX_SETTLE_TIME_104US)
+ * @param[in]   rx_fs_time_val - rx fast settle time value(e.g.,RX_SETTLE_TIME_15US,RX_SETTLE_TIME_37US,RX_SETTLE_TIME_77US)
+ * @return      none
+ */
+void TPLL_fast_settle_init(rf_tx_fast_settle_time_e tx_fs_time_val, rf_rx_fast_settle_time_e rx_fs_time_val);
+
+/**
+ * @brief       Set the PRX timeout_us.
+ * @param       timeout_us   Period in microseconds.
+ * @return      TPLL_SUCCESS                         If the operation completed successfully.
+ * @return      TPLL_ERROR_INVALID_PARAM             If the param was invalid.
+ */
+int TPLL_PRX_TimeoutSet(unsigned int timeout_us);
+
+/**
+ * @brief   This function is used to set the maximum packet reception length.
+ * @param[in]   length  -maximum packet reception length
+ * @return  none
+ */
+void TPLL_set_RXT_MaxLen(unsigned int length);
+
+/**
+ * @brief   This function is used to set the initial PID value of PRX.
+ * @param[in]   rx_pid  -Initial value of pid for PTX. (PID range:0~3)
+ * @return  none
+ */
+static inline void rf_set_prx_init_pid(unsigned char rx_pid)
+{
+    reg_rf_ll_ctrl_1 |= ((rx_pid & 0x03) << 4);
+}
+
+/**
+ * @brief   This function is used to set the initial PID value of PTX.
+ * @param[in]   tx_pid  -Initial value of pid for PTX. (PID range:0~3)
+ * @return  none
+ */
+static inline void rf_set_ptx_init_pid(unsigned char tx_pid)
+{
+    reg_rf_ll_ctrl_1 |= ((tx_pid & 0x03) << 6);
+}
+
+/**
+ * @brief   This function is used to set the modulation index to 0.32 in high performance mode for TX.
+ */
+void TPLL_tx_mi_0p32_hp_mode(void);
+
+/**
+ * @brief   This function is used to set the modulation index to 0.50 in high performance mode for TX.
+ */
+void TPLL_tx_mi_0p50_hp_mode(void);
+
+/**
+ * @brief   This function is used to set the modulation index to 0.32 in high performance mode for RX.
+ */
+void TPLL_rx_mi_0p32_hp_mode(void);
+
+/**
+ * @brief   This function is used to set the modulation index to 0.50 in high performance mode for RX.
+ */
+void TPLL_rx_mi_0p50_hp_mode(void);
+
+/**
+ * @brief   This function is used to set the modulation index to 0.32 in aura mode for TX.
+ */
+void TPLL_tx_mi_0p32_aura_mode(void);
+
+/**
+ * @brief   This function is used to set the modulation index to 0.50 in aura mode for TX.
+ */
+void TPLL_tx_mi_0p50_aura_mode(void);
+
+/**
+ * @brief   This function is used to set the modulation index to 0.32 in aura mode for RX.
+ */
+void TPLL_rx_mi_0p32_aura_mode(void);
+
+/**
+ * @brief   This function is used to set the modulation index to 0.50 in aura mode for RX.
+ */
+void TPLL_rx_mi_0p50_aura_mode(void);
+
+void dbg_simplified_tpll_tx_init(unsigned char* ptx_buffer, unsigned char* rx_buff);
+
+void dbg_simplified_tpll_rx_init(unsigned char* ptx_buffer, unsigned char* rx_buff);

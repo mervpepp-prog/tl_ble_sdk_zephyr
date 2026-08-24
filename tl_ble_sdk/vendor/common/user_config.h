@@ -47,6 +47,10 @@
     #define __PROJECT_BLE_CONTROLLER__ 0
 #endif
 
+#ifndef __PROJECT_N22_BLE_CONTROLLER__
+    #define __PROJECT_N22_BLE_CONTROLLER__ 0
+#endif
+
 #ifndef __PROJECT_TPLL_DEMOE__
     #define __PROJECT_TPLL_DEMOE__ 0
 #endif
@@ -67,6 +71,9 @@
     #define __PROJECT_ESLP_AP_DEMO__ 0
 #endif
 
+#ifndef __PROJECT_N22_2P4G_TPLL__
+    #define __PROJECT_N22_2P4G_TPLL__ 0
+#endif
 
 #if (__PROJECT_ACL_CONN_DEMO__)
     #include "vendor/acl_connection_demo/app_config.h"
@@ -78,6 +85,8 @@
     #include "vendor/feature_test/app_config.h"
 #elif (__PROJECT_BLE_REMOTE__)
     #include "vendor/ble_remote/app_config.h"
+#elif (__PROJECT_N22_BLE_CONTROLLER__)
+    #include "vendor/n22_ble_controller/app_config.h"
 #elif (__PROJECT_BLE_CONTROLLER__)
     #include "vendor/ble_controller/app_config.h"
 #elif (__PROJECT_ESLP_ESL_DEMO__)
