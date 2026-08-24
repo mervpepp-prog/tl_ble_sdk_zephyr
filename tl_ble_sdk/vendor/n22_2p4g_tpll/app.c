@@ -192,7 +192,7 @@ int app_hci_send_data(u32 h, u8 *para, int n)
 
         *p++ = HCI_TYPE_ACL_DATA;
         *p++ = h;                                                                         // para[1]: llid       //Handle:12|PB flag:2|BC flag:2 (2B)
-        *p++ = ((h >> 8) & 0x0F) | ((para[0] & 3) == L2CAP_CONTINUING_PKT ? 0x10 : 0x20); //start llid 2 ->0x20 ;  continue llid 1 ->0x10
+        *p++ = ((h >> 8) & 0x0F) | ((para[0] & 3) == 0x01 /* L2CAP_CONTINUING_PKT */ ? 0x10 : 0x20); //start llid 2 ->0x20 ;  continue llid 1 ->0x10
         *p++ = n;                                                                         //HCI ACL Data Total Length (2B)
         *p++ = n >> 8;
         smemcpy(p, para + 2, n);

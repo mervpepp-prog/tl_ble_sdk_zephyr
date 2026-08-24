@@ -87,6 +87,8 @@
     #include "vendor/ble_remote/app_config.h"
 #elif (__PROJECT_N22_BLE_CONTROLLER__)
     #include "vendor/n22_ble_controller/app_config.h"
+#elif (__PROJECT_N22_2P4G_TPLL__)
+    #include "vendor/n22_2p4g_tpll/app_config.h"
 #elif (__PROJECT_BLE_CONTROLLER__)
     #include "vendor/ble_controller/app_config.h"
 #elif (__PROJECT_ESLP_ESL_DEMO__)

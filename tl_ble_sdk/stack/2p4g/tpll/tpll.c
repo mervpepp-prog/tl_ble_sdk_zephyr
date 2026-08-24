@@ -28,7 +28,7 @@
 #include "driver.h"
 #include "types.h"
 #include "tpll.h"
-#include "drivers/TL322X/ext_driver/driver_internal/ext_rf_2p4g.h"
+//#include "drivers/TL322X/ext_driver/driver_internal/ext_rf_2p4g.h"
 
 static unsigned char rf_mode_format = 0;
 
@@ -1588,7 +1588,8 @@ _attribute_ram_code_sec_noinline_ void TPLL_fast_settle_init(rf_tx_fast_settle_t
 
 _attribute_ram_code_sec_noinline_ void TPLL_set_lowest_ret_ldo_voltage(void)
 {
-    pm_set_ret_ldo_voltage(RET_LDO_TRIM_0P65V);
+//    pm_set_ret_ldo_voltage(RET_LDO_TRIM_0P65V);
+	analog_write_reg8(areg_aon_0x0f, (analog_read_reg8(areg_aon_0x0f) & 0xf8) | 0x01);
 }
 
 /**
