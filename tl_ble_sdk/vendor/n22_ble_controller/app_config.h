@@ -27,7 +27,7 @@
 #include "bqb_config.h"
 
 
-#define BLE_APP_PM_ENABLE             0
+#define BLE_APP_PM_ENABLE             1
 #define PM_DEEPSLEEP_RETENTION_ENABLE 0
 
 #define HCI_TR_EN 0
@@ -85,7 +85,7 @@
 
 ///////////////////////// Application Configuration ////////////////////////////////////////////////////
 #if BLC_ZEPHYR_BLE_INTEGRATION
-#define BLMS_PM_ENABLE 0
+#define BLMS_PM_ENABLE 1
 
 #undef ACL_CENTRAL_MAX_NUM
 #define ACL_CENTRAL_MAX_NUM 0
