@@ -23,7 +23,7 @@
  *******************************************************************************************************/
 #include "keyscan_ana.h"
 #include <string.h>
-//#include "printf.h" /* remove for clean warnings */
+#include "pwm.h"
 
 /* sar adc dma chain configuration */
 dma_chain_config_t ks_ana_adc_rx_dma_list_config[2];
@@ -134,10 +134,9 @@ static void ks_ana_sar_adc_init(ks_ana_mode_e ks_ana_mode)
 /**
  * @brief      This function serves to configure keyscan registers for 8K data rate.
  * @param[in]  ks_ana_cfg           - the keyscan register configuration
- * @param[in]  hall_init_time    -set time from keyscan enable to start first scan, time = (16 * hall_init_time) * (1 / clk)
  * @return     none
  */
-static void ks_ana_mode_config(ks_ana_mode_e ks_ana_mode, unsigned char hall_init_time)
+static void ks_ana_mode_config(ks_ana_mode_e ks_ana_mode, ks_ana_clock_e ks_ana_clock)
 {
     ks_ana_config_t ks_ana_cfg = {0};
     switch (ks_ana_mode)
@@ -148,17 +147,47 @@ static void ks_ana_mode_config(ks_ana_mode_e ks_ana_mode, unsigned char hall_ini
             .channel_switch_to_adc_sample_time = {0x01, 0x00},
             .ks_en_to_scan_once_time = 0x3b,
             .ks_en_to_row_power_on_time = {0x00, 0x05, 0x0a, 0x0f, 0x14, 0x19, 0x1e, 0x23},
-            .ks_en_to_row_power_dn_time = {0x1f, 0x24, 0x29, 0x2e, 0x32, 0x37, 0x3b, 0x3b}
+            .ks_en_to_row_power_dn_time = {0x1f, 0x24, 0x29, 0x2e, 0x32, 0x37, 0x3b, 0x3b},
+            .ks_en_to_start_scan_time = 0x14,
         };
          break;
     case KEYSCAN_2XADC_8K_ONCE_MODE:
-        ks_ana_cfg = (ks_ana_config_t){
-            .one_channel_scan_time = 0x15,
-            .channel_switch_to_adc_sample_time = {0x00, 0x00},
-            .ks_en_to_scan_once_time = 0x2c,
-            .ks_en_to_row_power_on_time = {0x00, 0x02, 0x04, 0x06, 0x08, 0x0a, 0x0c, 0x0e},
-            .ks_en_to_row_power_dn_time = {0x1a, 0x1d, 0x1f, 0x22, 0x25, 0x27, 0x2a, 0x2b}
-        };
+            if (ks_ana_clock == KEYSCAN_PWM_CLOCK_96M)
+            {
+                ks_ana_cfg = (ks_ana_config_t){
+                    .one_channel_scan_time = 0x20,//（0x20+1）*1/12 =2.75us
+                    .channel_switch_to_adc_sample_time = {0x04, 0x04},  //0.75  (2*4+1)*1/12= 0.75;
+                    .ks_en_to_scan_once_time = 0x21,  //n*16*1/12  = 16*2.75 = 44  n=33
+                    // .one_channel_scan_time = 0x41,  //（0x41+1）*1/12 = 5.5us
+                    // .channel_switch_to_adc_sample_time = {0x13, 0x13},  //(2*0x13 + 1) *1/12= 3.25us
+                    // .ks_en_to_scan_once_time = 0x42,  //0x42*16*1/12 = 88us
+                    // .one_channel_scan_time = 0x62,  //（0x62+1）*1/12 = 8.25us
+                    // .channel_switch_to_adc_sample_time = {0x22, 0x22},  //(2*0x22 + 1) *1/12= 5.75us
+                    // .ks_en_to_scan_once_time = 0x63,  //0x63*16*1/12 = 132us
+                    
+                    .ks_en_to_row_power_on_time = {0x2b, 0x2a, 0x27, 0x25, 0x22, 0x1f, 0x1d, 0x1a},
+                    .ks_en_to_row_power_dn_time = {0x0e, 0x0c, 0x0a, 0x08, 0x06, 0x04, 0x02, 0x00},
+                    .ks_en_to_start_scan_time= 0x0,
+                };
+            }
+            else if (ks_ana_clock == KEYSCAN_PWM_CLOCK_32M)
+            {
+                ks_ana_cfg = (ks_ana_config_t){
+                    .one_channel_scan_time = 0x0a,//（0x0a+1）*0.25 =2.75us
+                    .channel_switch_to_adc_sample_time = {0x01, 0x01},  //0.75  (2*1+1)*0.25= 0.75;
+                    .ks_en_to_scan_once_time = 0xb,  //n*16*0.25  = 16*2.75 = 44  n=11
+                    // .one_channel_scan_time = 0x15,//（0x15+1）*0.25 =5.5us
+                    // .channel_switch_to_adc_sample_time = {0x06, 0x06},  //(2*0x06 + 1) *0.25= 3.25us
+                    // .ks_en_to_scan_once_time = 0x16,  //0x16*16*0.25 = 88us
+                    // .one_channel_scan_time = 0x20,//（0x20+1）*0.25 =8.25us
+                    // .channel_switch_to_adc_sample_time = {0x0b, 0x0b},  //(2*0x0b + 1) *0.25= 5.75us
+                    // .ks_en_to_scan_once_time = 0x21,  //0x21*16*0.25 = 132us
+                    
+                    .ks_en_to_row_power_on_time = {0x2b, 0x2a, 0x27, 0x25, 0x22, 0x1f, 0x1d, 0x1a},
+                    .ks_en_to_row_power_dn_time = {0x0e, 0x0c, 0x0a, 0x08, 0x06, 0x04, 0x02, 0x00},
+                    .ks_en_to_start_scan_time= 0x0,
+                };
+            }
         break;
     case KEYSCAN_2XADC_8K_TWICE_M1_MODE:
         ks_ana_cfg = (ks_ana_config_t){
@@ -167,9 +196,10 @@ static void ks_ana_mode_config(ks_ana_mode_e ks_ana_mode, unsigned char hall_ini
             .ks_en_to_scan_once_time = 0x3f,
             .ks_en_to_second_scan_time = 0x2a,
             .ks_en_to_row_power_on_time = {0x00, 0x05, 0x0a, 0x0f, 0x14, 0x19, 0x1e, 0x23},
-            .ks_en_to_row_power_dn_time = {0x20, 0x25, 0x2a, 0x2f, 0x34, 0x39, 0x3e, 0x3e}
+            .ks_en_to_row_power_dn_time = {0x20, 0x25, 0x2a, 0x2f, 0x34, 0x39, 0x3e, 0x3e},
+            .ks_en_to_start_scan_time = 0x14,
         };
-        reg_ks_a_setl5 = ks_ana_cfg.ks_en_to_second_scan_time - (0x14 - hall_init_time);
+        reg_ks_a_setl5 = ks_ana_cfg.ks_en_to_second_scan_time;
         break;
     case KEYSCAN_2XADC_8K_TWICE_M2_MODE:
         ks_ana_cfg = (ks_ana_config_t){
@@ -178,9 +208,10 @@ static void ks_ana_mode_config(ks_ana_mode_e ks_ana_mode, unsigned char hall_ini
             .ks_en_to_scan_once_time = 0x3b,
             .ks_en_to_second_scan_time = 0x27,
             .ks_en_to_row_power_on_time = {0x00, 0x04, 0x09, 0x0d, 0x12, 0x17, 0x1c, 0x20},
-            .ks_en_to_row_power_dn_time = {0x1f, 0x24, 0x29, 0x2e, 0x32, 0x37, 0x3a, 0x3a}
+            .ks_en_to_row_power_dn_time = {0x1f, 0x24, 0x29, 0x2e, 0x32, 0x37, 0x3a, 0x3a},
+            .ks_en_to_start_scan_time = 0x14,
         };
-        reg_ks_a_setl5 = ks_ana_cfg.ks_en_to_second_scan_time - (0x14 - hall_init_time);
+        reg_ks_a_setl5 = ks_ana_cfg.ks_en_to_second_scan_time;
         break;
     default:
         break;
@@ -189,15 +220,22 @@ static void ks_ana_mode_config(ks_ana_mode_e ks_ana_mode, unsigned char hall_ini
      * -# hall_init_time is the time from power-on to operational readiness for the hall key.
      * -# Only ks_en_to_scan_once_time/ks_en_to_second_scan_time/ks_en_to_row_power_dn_time need to vary according to the different Hall materials.(Confirmed by jingsong.luo)
      */
-    reg_ks_ctrl0 = 0x30;//fix at 0x30, corresponds to ADC 2M sampling rate and cannot be changed
+    if (ks_ana_clock == KEYSCAN_PWM_CLOCK_96M)
+    {
+        reg_ks_ctrl0 = 0x50;//corresponds to ADC sampling rate
+    }
+    else if (ks_ana_clock == KEYSCAN_PWM_CLOCK_32M)
+    {
+        reg_ks_ctrl0 = 0x10;//corresponds to ADC sampling rate
+    }
     reg_ks_a_setl0 = ks_ana_cfg.one_channel_scan_time;
     reg_ks_a_setl1 = ks_ana_cfg.channel_switch_to_adc_sample_time[0];
     reg_ks_a_setl2 = ks_ana_cfg.channel_switch_to_adc_sample_time[1];
-    reg_ks_a_setl3 = ks_ana_cfg.ks_en_to_scan_once_time - (0x14 - hall_init_time);
-    reg_ks_a_setl4 = hall_init_time;
+    reg_ks_a_setl3 = ks_ana_cfg.ks_en_to_scan_once_time;
+    reg_ks_a_setl4 = ks_ana_cfg.ks_en_to_start_scan_time;
     for (int i = 0; i < 8; i++) {
         reg_ks_pwr_on_setl(i) = ks_ana_cfg.ks_en_to_row_power_on_time[i];
-        reg_ks_pwr_dn_setl(i) = ks_ana_cfg.ks_en_to_row_power_dn_time[i] - (0x14 - hall_init_time);
+        reg_ks_pwr_dn_setl(i) = ks_ana_cfg.ks_en_to_row_power_dn_time[i];
     }
 
 }
@@ -205,14 +243,45 @@ static void ks_ana_mode_config(ks_ana_mode_e ks_ana_mode, unsigned char hall_ini
 /**
  * @brief      This function serves to init keyscan work mode.
  * @param[in]  ks_ana_mode          - the Keyscan mode
- * @param[in]  hall_init_time    -set time from keyscan enable to start first scan, time = (16 * hall_init_time) * (1 / clk)
  * @return     none
  */
-static void ks_ana_mode_init(ks_ana_mode_e ks_ana_mode,unsigned char hall_init_time)
-{
-    reg_clkks_mode = KS_8K_SRC_XTL24M;
 
-    ks_ana_mode_config(ks_ana_mode, hall_init_time);
+static inline void keyscan_pwm_start(void)
+{
+    //reg_ks_a_en1 |= FLD_KS_A_EN;//keyscan enable
+    //reg_pwm_enable |= 0x100000E;
+
+    __asm__ volatile("lui   a5,0x80140 \n\t");
+    __asm__ volatile("lui   a3,0x80141 \n\t");
+
+    __asm__ volatile("addi  a5,a5,1814 \n\t"); //reg_ks_a_en1,0x140716
+    __asm__ volatile("addi  a3,a3,-484 \n\t"); //reg_pwm_enable,0x140e1c
+
+    __asm__ volatile("lbu   a4,0(a5) \n\t");
+    __asm__ volatile("ori   a4,a4,1 \n\t");
+
+    __asm__ volatile("lui   a2,0x1000 \n\t");
+    __asm__ volatile("sb    a4,0(a5) \n\t");
+    __asm__ volatile("c.lw  a1,0(a3) \n\t");
+    __asm__ volatile("c.addi    a2,14 \n\t");
+    __asm__ volatile("c.or  a1,a2 \n\t");
+    __asm__ volatile("c.sw  a1,0(a3) \n\t");
+
+}
+
+
+static  _attribute_ram_code_sec_noinline_ void ks_ana_mode_init(ks_ana_mode_e ks_ana_mode, ks_ana_clock_e ks_ana_clock)
+{
+    if (ks_ana_clock == KEYSCAN_PWM_CLOCK_96M)
+    {
+        reg_clkks_mode = KS_12K_SRC_XTL24M;
+    }
+    else if (ks_ana_clock == KEYSCAN_PWM_CLOCK_32M)
+    {
+        reg_clkks_mode = KS_4K_SRC_XTL24M;
+    }
+
+    ks_ana_mode_config(ks_ana_mode, ks_ana_clock);
 
     if (ks_ana_mode == KEYSCAN_1XADC_8K_ONCE_MODE) {
         reg_ks_a_en0 = FLD_KS_CAPTURE_IO | FLD_KS_A_IE0;                //release IO after capture stop, keyscan interrupt enable for ADC0
@@ -228,7 +297,13 @@ static void ks_ana_mode_init(ks_ana_mode_e ks_ana_mode,unsigned char hall_init_t
         reg_ks_a_en2 = FLD_KS_SCAN2_EN_IO | FLD_KS_SETL_TIME_SCAN2_EN | FLD_KS_IRQ_DLY_EN;
     }
 
-    reg_ks_a_en1 |= FLD_KS_A_EN;//keyscan enable
+    BM_SET(reg_ks_en, FLD_KS_OUT_INV);
+
+// #if (KEYSCAN_MODE == KEYSCAN_PWM_IO)
+    keyscan_pwm_start();
+// #elif (KEYSCAN_MODE == KEYSCAN_SWITCH_CHANNEL_IO)
+//  reg_ks_a_en1 |= FLD_KS_A_EN;//keyscan enable
+// #endif
 }
 
 /**
@@ -243,15 +318,16 @@ static void ks_ana_pin_init(ks_ana_gpio_pin_t gpio_pins)
         gpio_function_dis(gpio_pins.ana_switch_channel_pin[i]);
         gpio_set_mux_function((gpio_func_pin_e)gpio_pins.ana_switch_channel_pin[i], KEYS0_IO);
         /* channel pin use hardware pulldown */
-        gpio_set_low_level(gpio_pins.ana_switch_channel_pin[i]);
+        gpio_set_up_down_res(gpio_pins.ana_switch_channel_pin[i], GPIO_PIN_PULLUP_10K);
+        //gpio_set_low_level(gpio_pins.ana_switch_channel_pin[i]);
     }
 
     //set hall rows power pins
     for (int i = 0; i < HALL_ROWS_POWER_NUMBER; i++) {
         gpio_function_dis(gpio_pins.hall_rows_power_pin[i]);
         gpio_set_mux_function((gpio_func_pin_e)gpio_pins.hall_rows_power_pin[i], KEYS0_IO);
-        gpio_set_up_down_res(gpio_pins.hall_rows_power_pin[i], GPIO_PIN_PULLDOWN_100K);
-        gpio_set_low_level(gpio_pins.hall_rows_power_pin[i]);
+        gpio_set_up_down_res(gpio_pins.hall_rows_power_pin[i], GPIO_PIN_PULLUP_10K);
+       // gpio_set_low_level(gpio_pins.hall_rows_power_pin[i]);
     }
 
     gpio_function_en(gpio_pins.ana_switch_enable_pin);
@@ -276,12 +352,11 @@ void ks_ana_set_hall_threshold(ks_ana_threshold_t ks_ana_threshold)
  * @brief      This function serves to init keyscan analog module.
  * @param[in]  ks_ana_gpio_pin          - the analog keyscan gpio pins 
  * @param[in]  ks_ana_mode              - the analog keyscan mode
- * @param[in]  hall_init_time    -set time from keyscan enable to start first scan, time = (16 * hall_init_time) * (1 / clk)
  * @param[in]  ks_ana_threshold          - the analog keyscan hall threshold
  * @return     none
  * @note       Please refer to the precautions of ks_ana_gpio_pin_t when setup gpio pins.
  */
-void ks_ana_init(ks_ana_gpio_pin_t ks_ana_gpio_pin, ks_ana_mode_e ks_ana_mode, unsigned char hall_init_time, ks_ana_threshold_t ks_ana_threshold)
+void ks_ana_init(ks_ana_gpio_pin_t ks_ana_gpio_pin, ks_ana_mode_e ks_ana_mode, ks_ana_clock_e ks_ana_clock, ks_ana_threshold_t ks_ana_threshold)
 {
     reg_rst5 |= FLD_RST5_KEY_SCAN;
     reg_clk_en5 |= FLD_CLK5_KEYSCAN_EN;
@@ -292,7 +367,8 @@ void ks_ana_init(ks_ana_gpio_pin_t ks_ana_gpio_pin, ks_ana_mode_e ks_ana_mode, u
 
     ks_ana_set_hall_threshold(ks_ana_threshold);//set hall threshold
 
-    ks_ana_mode_init(ks_ana_mode, hall_init_time);//init mode
+    ks_ana_mode_init(ks_ana_mode, ks_ana_clock);//init mode
+
 }
 
 /**
@@ -301,13 +377,14 @@ void ks_ana_init(ks_ana_gpio_pin_t ks_ana_gpio_pin, ks_ana_mode_e ks_ana_mode, u
  * @note       the disable order: ks_ana_disable-> dma_chn_dis
  */
 void ks_ana_disable(void){
-    while(!(( ks_ana_get_irq_status() & (FLD_KS_FRM_END_STA | FLD_KS_FRM_END1_STA))==0x3))
-    ks_ana_clr_irq_status(FLD_KS_FRM_END_STA | FLD_KS_FRM_END1_STA);
+    // while(!(( ks_ana_get_irq_status() & (FLD_KS_FRM_END_STA | FLD_KS_FRM_END1_STA))==0x3)) //2.4G use
+    // ks_ana_clr_irq_status(FLD_KS_FRM_END_STA | FLD_KS_FRM_END1_STA); //2.4G use
     reg_rst5 &= ~FLD_RST5_KEY_SCAN;
     reg_clk_en5 &= ~FLD_CLK5_KEYSCAN_EN;
     reg_ks_a_en1 &= ~(FLD_KS_A_EN|FLD_KS_ADC_EN | FLD_KS_ADC1_EN | FLD_KS_MOD_A | FLD_KS_CLK_A_EN);//keyscan enable
-    adc_power_off(ADC0);
-    adc_power_off(ADC1);
+    // adc_power_off(ADC0);
+    // adc_power_off(ADC1);
+    keyscan_double_sar_power_off();
 }
 
 /**
@@ -320,10 +397,10 @@ void ks_ana_enable(void){
      reg_soft_control(ADC1)|=FLD_FIFO_CLR;
      reg_clk_en5 |= FLD_CLK5_KEYSCAN_EN;
      reg_rst5 |= FLD_RST5_KEY_SCAN;
-     adc_power_on(ADC0);
-     adc_power_on(ADC1);
-     reg_ks_a_en1 = FLD_KS_ADC_EN | FLD_KS_ADC1_EN | FLD_KS_MOD_A | FLD_KS_CLK_A_EN;
-     reg_ks_a_en1 |= FLD_KS_A_EN;//keyscan enable//keyscan enable
+    //  adc_power_on(ADC0);
+    //  adc_power_on(ADC1);
+    keyscan_double_sar_power_on();
+    reg_ks_a_en1 = FLD_KS_ADC_EN | FLD_KS_ADC1_EN | FLD_KS_MOD_A | FLD_KS_CLK_A_EN;
 }
 /**********************************************************************************************************************
  *                                          local function implementation                                             *

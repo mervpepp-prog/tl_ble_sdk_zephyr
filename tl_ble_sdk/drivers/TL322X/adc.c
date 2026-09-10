@@ -730,7 +730,7 @@ void adc_keyscan_sample_init(adc_num_e sar_adc_num)
     power_adc_protected_mode(PROTECT_VOLTAGE_PROTECT_MODE);
     adc_chn_cfg_t chn_cfg =
     {
-        .pre_scale = ADC_PRESCALE_1F4,
+        .pre_scale = ADC_PRESCALE_1F2,
         .sample_freq = ADC_SAMPLE_FREQ_2M,  //When using a 2M sampling rate, the ADC analog clock must be 48M, and the PLL clock must be a multiple of 48.
         .input_p = ADC0_GPIO_PC0P,
         .input_n = ADC0_GPIO_PC0N,
@@ -746,10 +746,10 @@ void adc_keyscan_sample_init(adc_num_e sar_adc_num)
         adc_pin_config(GPIO_PC1);
         adc_pin_config(GPIO_PC2);
         adc_pin_config(GPIO_PC3);
-        adc_pin_config(GPIO_PC4);
-        adc_pin_config(GPIO_PC5);
-        adc_pin_config(GPIO_PC6);
-        adc_pin_config(GPIO_PC7);
+        // adc_pin_config(GPIO_PC4);
+        // adc_pin_config(GPIO_PC5);
+        // adc_pin_config(GPIO_PC6);
+        // adc_pin_config(GPIO_PC7);
 
         reg_pad_auto_p(ADC0) = 0x87654321;
         reg_pad_auto_n(ADC0) = 0xbbbbbbbb;//GND
@@ -762,7 +762,8 @@ void adc_keyscan_sample_init(adc_num_e sar_adc_num)
         reg_pad_auto_p(ADC0) = 0x43214321;
         reg_pad_auto_n(ADC0) = 0xbbbbbbbb;//GND
 
-        reg_pad_auto_p(ADC1) = 0x43214321;
+        reg_pad_auto_p(ADC1) = 0xb321b321;
+        // reg_pad_auto_p(ADC1) = 0x43214321;//for 64 key
         reg_pad_auto_n(ADC1) = 0xbbbbbbbb;//GND
     }
     g_adc_vref_fast_startup_shadow[sar_adc_num] |= FLD_VREF_FAST_STARTUP|FLD_SAMPLED_INPUT_MODEBAR;
@@ -1001,3 +1002,36 @@ void adc_trigger_en(adc_num_e sar_adc_num)
     reg_adc_config2(sar_adc_num) |= FLD_TRIG_MODE;
 }
 
+/**
+ * @brief    This function is used to supply power to the dual sar_adc.
+ * @return   none.
+ */
+void keyscan_double_sar_power_on(void)
+{
+    adc_set_scan_chn_dis(ADC0);
+    adc_set_scan_chn_dis(ADC1);
+    adc_reset(ADC0);
+    adc_reset(ADC1);
+    adc_set_scan_chn_cnt(ADC0, 1);
+    adc_set_scan_chn_cnt(ADC1, 1);
+    g_adc_pga_ctrl_shadow[ADC0] &= (~FLD_SAR_ADC_POWER_DOWN);
+    g_adc_pga_ctrl_shadow[ADC1] &= (~FLD_SAR_ADC_POWER_DOWN);
+    analog_write_reg8(areg_adc_pga_ctrl(ADC0), g_adc_pga_ctrl_shadow[ADC0]);
+    analog_write_reg8(areg_adc_pga_ctrl(ADC1), g_adc_pga_ctrl_shadow[ADC1]);
+    adc_dig_clk_en(ADC0);
+    adc_dig_clk_en(ADC1);
+}
+
+/**
+ * @brief    This function is used to shut down the dual sar_adc.
+ * @return   none
+ */
+void keyscan_double_sar_power_off(void)
+{
+    adc_dig_clk_dis(ADC0);
+    adc_dig_clk_dis(ADC1);
+    g_adc_pga_ctrl_shadow[ADC0] |= FLD_SAR_ADC_POWER_DOWN;
+    g_adc_pga_ctrl_shadow[ADC1] |= FLD_SAR_ADC_POWER_DOWN;
+    analog_write_reg8(areg_adc_pga_ctrl(ADC0), g_adc_pga_ctrl_shadow[ADC0]);
+    analog_write_reg8(areg_adc_pga_ctrl(ADC1), g_adc_pga_ctrl_shadow[ADC1]);
+}

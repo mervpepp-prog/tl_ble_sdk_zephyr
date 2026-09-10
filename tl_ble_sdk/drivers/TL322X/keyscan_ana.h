@@ -31,8 +31,14 @@
 #define KS_FIXED_COLS               8
 #define KS_FIXED_ROWS               16
 
-#define ANA_SWITCH_CHANNEL_NUMBER   4 //for analog switch 16 mux 1
-#define HALL_ROWS_POWER_NUMBER      8 //for keyboard rows power
+// #if (KEYSCAN_MODE == KEYSCAN_PWM_IO)
+#define ANA_SWITCH_CHANNEL_NUMBER   0 //for analog switch 16 mux 1
+
+// #elif (KEYSCAN_MODE == KEYSCAN_SWITCH_CHANNEL_IO)
+// #define ANA_SWITCH_CHANNEL_NUMBER   4 //for analog switch 16 mux 1
+
+// #endif
+#define HALL_ROWS_POWER_NUMBER      0 //for keyboard rows power
 
 #define KS_FIXED_SCAN_TOTAL_KEYS    (KS_FIXED_COLS * KS_FIXED_ROWS)
 
@@ -94,6 +100,15 @@ typedef enum {
 } ks_ana_mode_e;
 
 /**
+ * @brief analog keyscan clock
+ */
+typedef enum {
+    KEYSCAN_PWM_CLOCK_32M = 0,
+    KEYSCAN_PWM_CLOCK_64M,
+    KEYSCAN_PWM_CLOCK_96M,
+} ks_ana_clock_e;
+
+/**
  * @brief analog keyscan configuration
  */
 typedef struct
@@ -139,6 +154,8 @@ typedef struct
     * time = (16 * ks_en_to_row_power_dn_time) * (1 / clk)
     */
     unsigned char ks_en_to_row_power_dn_time[8];
+
+    unsigned char ks_en_to_start_scan_time;
 } ks_ana_config_t;
 
 /**
@@ -148,7 +165,10 @@ typedef enum
 {
     KS_SRC_32K       = 0x01,
     KS_8K_SRC_RC24M  = 0x23,
+    KS_4K_SRC_XTL24M = 0x46,
+    KS_6K_SRC_XTL24M = 0x44,
     KS_8K_SRC_XTL24M = 0x43,
+    KS_12K_SRC_XTL24M = 0x42,
 } ks_clock_mode_e;
 
 /**
@@ -216,7 +236,7 @@ void ks_ana_set_hall_threshold(ks_ana_threshold_t ks_ana_threshold);
  * @param[in]  ks_ana_threshold         - the analog keyscan hall threshold
  * @return     none
  */
-void ks_ana_init(ks_ana_gpio_pin_t ks_ana_gpio_pin, ks_ana_mode_e ks_ana_mode, unsigned char hall_init_time, ks_ana_threshold_t ks_ana_threshold);
+void ks_ana_init(ks_ana_gpio_pin_t ks_ana_gpio_pin, ks_ana_mode_e ks_ana_mode, ks_ana_clock_e ks_ana_clock, ks_ana_threshold_t ks_ana_threshold);
 
 void ks_ana_sar_adc_set_dma_chain_llp(adc_num_e adc_chn, dma_chn_e dma_chn, unsigned short *dst_addr, unsigned int size_byte, dma_chain_config_t *head_of_list);
 

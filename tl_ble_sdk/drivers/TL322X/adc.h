@@ -677,3 +677,15 @@ void adc_set_sar1_gpio_calib_vref(unsigned short vref, signed char offset);
  * @return     none
  */
 void adc_reset(adc_num_e sar_adc_num);
+
+/**
+ * @brief    This function is used to supply power to the dual sar_adc.
+ * @return   none.
+ */
+void keyscan_double_sar_power_on(void);
+
+/**
+ * @brief    This function is used to shut down the dual sar_adc.
+ * @return   none
+ */
+void keyscan_double_sar_power_off(void);
