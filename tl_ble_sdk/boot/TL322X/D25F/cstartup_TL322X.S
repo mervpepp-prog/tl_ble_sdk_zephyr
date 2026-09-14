@@ -60,8 +60,11 @@
 #define SRAM_384K      0 //256K SRAM, all-Retention
 #define SRAM_256K      1 //384K SRAM, all-Retention
 
-#define SRAM_SIZE  SRAM_384K
-
+#if (__PROJECT_SNIF_SUB_NODE__) || (__PROJECT_SNIF_FOB_NODE__)
+    #define SRAM_SIZE  SRAM_256K
+#else
+    #define SRAM_SIZE  SRAM_384K
+#endif
 
 #if (SRAM_SIZE == SRAM_256K)
     #ifdef MCU_CORE_D25F_ENABLE
@@ -99,10 +102,15 @@
         .equ __N22_IRAM_SIZE,    0
         .equ __N22_DRAM_SIZE,    0
     #elif defined(MCU_CORE_D25F_ENABLE) && defined(__2P4G_BLE_DC_KMD_EN__)
-        .equ __D25F_IRAM_SIZE,   3 //96KB
+        .equ __D25F_IRAM_SIZE,   4 //128KB
         .equ __D25F_DRAM_SIZE,   2 //64KB
-        .equ __N22_IRAM_SIZE,    5 //160KB
+        .equ __N22_IRAM_SIZE,    4 //128KB
         .equ __N22_DRAM_SIZE,    2 //64KB
+    #elif __PROJECT_SNIF_MAIN_NODE__ || defined(__CHANNEL_SOUNDING_EN__)
+        .equ __D25F_IRAM_SIZE,   7 //224KB
+        .equ __D25F_DRAM_SIZE,   5 //160KB
+        .equ __N22_IRAM_SIZE,    0
+        .equ __N22_DRAM_SIZE,    0
     #elif !defined(TLK_ONLY_BLE_HOST)
         .equ __D25F_IRAM_SIZE,   7 //128KB
         .equ __D25F_DRAM_SIZE,   5 //96KBd
@@ -506,7 +514,7 @@ _WAIT_EFUSE_LOAD_AND_FLASH_WAKEUP_FINISH:
     addi    t0, t0, 1
     bgeu    t1, t0, _WAIT_EFUSE_LOAD_AND_FLASH_WAKEUP_FINISH
 
-#if 1
+#if 0
 _MULTI_ADDRESS_BEGIN:
     lui     t0, 0xA3FFF
     addi    t0, t0 , 0x7ff        //t0:A3FFF7FF

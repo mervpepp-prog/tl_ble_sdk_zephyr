@@ -57,7 +57,7 @@
 #define FLASH_GD25LE16E_SUPPORT_EN                              0
 #define FLASH_GD25LQ80E_SUPPORT_EN                              1
 #define FLASH_GD25LE80E_SUPPORT_EN                              0
-
+#define FLASH_TH25Q32U_SUPPORT_EN                               0
 /**
  * @brief   RF THREE CHANNEL CALIBRATION
  */

@@ -29,7 +29,7 @@
     #define USBD_BUS_NUM 1
 #endif
 
-volatile unsigned char g_usbd_remote_wakeup_en = 1;
+volatile unsigned char g_usbd_remote_wakeup_en = 0;
 
 typedef struct
 {

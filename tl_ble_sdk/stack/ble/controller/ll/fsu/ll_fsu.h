@@ -31,7 +31,7 @@
 /* Default frame space value (us) used when fsu_param is unbound (NULL) or on reset. */
 #define FSU_DEFAULT_FS_US       150
 
-#define FSU_ACL_MCES_DEFAULT    1250
+#define FSU_ACL_MCES_DEFAULT    125
 
 #define FSU_REQ_PENDING         BIT(0)
 #define FSU_RSP_PENDING         BIT(1)
@@ -60,9 +60,7 @@ enum{
 
 enum{
     FSU_REQ_CMD_SEND               = BIT(0),
-    FSU_REQ_CMD_REV                = BIT(1),
     FSU_RSP_CMD_SEND               = BIT(2),
-    FSU_RSP_CMD_REV                = BIT(3),
 
     FSU_LL_REJ_CMD_SEND            = BIT(4),
     FSU_LL_REJ_CMD_REV_UNSUP_FEAT  = BIT(5), //Unsupport remote feature
@@ -117,7 +115,7 @@ typedef struct{
 
 extern fsu_cmplet_evt_t fsuCmpletEvt;
 
-/* FSU task callback flags �� single callback handles all FSU operations.
+/* FSU task callback flags — single callback handles all FSU operations.
  * p parameter: FLAG_FSU_RESET/CONN_RESET/MAINLOOP -> (void*)(u32)connHandle,
  *              FLAG_FSU_START/GET_MCES/TX_WAIT/POST -> (void*)st_ll_conn_t* */
 enum {

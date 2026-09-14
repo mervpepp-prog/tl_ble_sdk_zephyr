@@ -75,6 +75,12 @@ SECTIONS
     PROVIDE (_RETENTION_RESET_LMA_START = LOADADDR(.retention_reset));
     PROVIDE (_RETENTION_RESET_VMA_END = .); 
 
+    . = ALIGN(8);
+    PROVIDE (_IRAM_REBOOT_RETENTION_VMA_START = .);
+    .iram_rbt_ret (NOLOAD): { KEEP(*(.iram_rbt_ret )) }
+    PROVIDE (_IRAM_REBOOT_RETENTION_VMA_END = .);
+    
+    . = ALIGN(8);
     .retention_data : AT( ALIGN(LOADADDR (.retention_reset) + SIZEOF (.retention_reset),ALIGNOF(.retention_data))) 
         { KEEP(*(.retention_data )) }
     PROVIDE (_RETENTION_DATA_VMA_START = ADDR(.retention_data));
@@ -96,10 +102,13 @@ SECTIONS
     .iram_bss (NOLOAD): { KEEP(*(.iram_bss )) }
     PROVIDE (_IRAM_BSS_VMA_END = .);
     . = ALIGN(LOADADDR (.ram_code) + SIZEOF (.ram_code), 8);
+    PROVIDE (__stext = .);
     .text           : AT(ALIGN(LOADADDR (.ram_code) + SIZEOF (.ram_code), 8))
         { *(.text .stub .text.* .gnu.linkonce.t.* ) KEEP(*(.text.*personality* )) *(.gnu.warning ) }
+    PROVIDE (__etext = .);
     .rodata         : AT(ALIGN(LOADADDR (.text) + SIZEOF (.text), ALIGNOF(.rodata))) 
-        { *(.rodata .rodata.* .gnu.linkonce.r.* )}
+        { *(.rodata .rodata.* .gnu.linkonce.r.* )
+          *(.srodata.cst16 ) *(.srodata.cst8 ) *(.srodata.cst4 ) *(.srodata.cst2 ) *(.srodata .srodata.* )}
     .eh_frame_hdr   : AT(ALIGN(LOADADDR (.rodata) + SIZEOF (.rodata), ALIGNOF(.eh_frame_hdr)))
         { *(.eh_frame_hdr ) }
     . = ALIGN(0x20);
@@ -119,7 +128,6 @@ SECTIONS
     .data   : AT(ALIGN(LOADADDR (.rf_certification_cfg) + SIZEOF (.rf_certification_cfg),  ALIGNOF(.data)))
         { *(.data .data.* .gnu.linkonce.d.* ) KEEP(*(.gnu.linkonce.d.*personality* )) SORT(CONSTRUCTORS) 
           *(.sdata .sdata.* .gnu.linkonce.s.* ) *(.sdata2 .sdata2.* .gnu.linkonce.s.* )
-          *(.srodata.cst16 ) *(.srodata.cst8 ) *(.srodata.cst4 ) *(.srodata.cst2 ) *(.srodata .srodata.* )
         }
     PROVIDE (_DATA_VMA_END = .);    
     PROVIDE (_DATA_VMA_START = ADDR(.data));

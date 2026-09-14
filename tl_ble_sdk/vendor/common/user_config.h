@@ -71,6 +71,13 @@
     #define __PROJECT_ESLP_AP_DEMO__ 0
 #endif
 
+#ifndef __PROJECT_2P4G_SC_HID_DONGLE_DEMO__
+    #define __PROJECT_2P4G_SC_HID_DONGLE_DEMO__ 0
+#endif
+#ifndef __PROJECT_2P4G_BLE_N22_KB_DEMO__
+    #define __PROJECT_2P4G_BLE_N22_KB_DEMO__ 0
+#endif
+
 #ifndef __PROJECT_N22_2P4G_TPLL__
     #define __PROJECT_N22_2P4G_TPLL__ 0
 #endif
@@ -101,6 +108,10 @@
     #include "vendor/2p4g_gen_fsk/app_config.h"
 #elif (__PROJECT_2P4G_FEATURE_DEMOE__)
     #include "vendor/2p4g_feature_test/app_config.h"
+#elif (__PROJECT_2P4G_SC_HID_DONGLE_DEMO__)
+    #include "vendor/2p4g_project_code/2p4g_ble_single_core/dongle/app_config.h"
+#elif (__PROJECT_2P4G_BLE_N22_KB_DEMO__)
+    #include "vendor/2p4g_project_code/2p4g_ble_dual_core/n22_kb/app_config.h"
 #else
     #include "vendor/common/default_config.h"
 #endif

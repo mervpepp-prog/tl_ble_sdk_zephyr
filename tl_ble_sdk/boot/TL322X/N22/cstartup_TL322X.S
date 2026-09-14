@@ -38,21 +38,19 @@
 //    .equ __N22_IRAM_SIZE,    3 //96KB
 //    .equ __N22_DRAM_SIZE,    3 //96KB
 
-#ifdef BLC_ZEPHYR_BLE_INTEGRATION
 
-    .equ __D25F_IRAM_SIZE,   2 //64KB
-    .equ __D25F_DRAM_SIZE,   3 //96KB
-    .equ __N22_IRAM_SIZE,    5 //160KB
-    .equ __N22_DRAM_SIZE,    2 //64KB
+    #if (__PROJECT_2P4G_BLE_N22_KB_DEMO__ == 1)
+        .equ __D25F_IRAM_SIZE,   3 //128KB
+        .equ __D25F_DRAM_SIZE,   2 //64KB
+        .equ __N22_IRAM_SIZE,    5 //128KB
+        .equ __N22_DRAM_SIZE,    2 //64KB
+    #else
+        .equ __D25F_IRAM_SIZE,   3 //128KB
+        .equ __D25F_DRAM_SIZE,   2 //64KB
+        .equ __N22_IRAM_SIZE,    5 //128KB
+        .equ __N22_DRAM_SIZE,    2 //64KB
+    #endif
 
-#else
-
-    .equ __D25F_IRAM_SIZE,   5 //160KB
-    .equ __D25F_DRAM_SIZE,   3 //96KB
-    .equ __N22_IRAM_SIZE,    3 //96KB
-    .equ __N22_DRAM_SIZE,    1 //32KB
-
-#endif
 
     .equ __D25F_N22_RAM_REG,    ((__N22_DRAM_SIZE+__N22_IRAM_SIZE)<<12)|(__N22_DRAM_SIZE<<8)|(__D25F_DRAM_SIZE)
 

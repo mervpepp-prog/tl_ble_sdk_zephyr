@@ -33,7 +33,7 @@
 #define SOFT_STRUCTURE       0
 #define MAJOR_VERSION        4
 #define MINOR_VERSION        8
-#define PATCH_NUM            1
+#define PATCH_NUM            0
 
 #define CUSTOM_MAJOR_VERSION 0
 #define CUSTOM_MINOR_VERSION 0
@@ -60,13 +60,3 @@
 
 #define CUSTOM_VERSION1(cunstom_version_num) "$$$custom_" #cunstom_version_num "$$$"
 #define CUSTOM_VERSION(cunstom_version_num)  CUSTOM_VERSION1(cunstom_version_num)
-
-/**
- * @brief      get SDK version information
- * @param[in]  pbuf - the pointer to the version string.
- *             eg. "LibVer:V4.0.4.4_P0001 C0.0 "
- * @param[in]  number - the size of the buffer.
- * @return     the actual length of version string.
- */
-unsigned char tlk_get_sdk_version(unsigned char *pbuf, unsigned char number);
-#define blc_get_sdk_version tlk_get_sdk_version

@@ -28,10 +28,10 @@
 #include "gpio.h"
 #include "lib/include/clock.h"
 
-#define PM_POWER_OPTIMIZATION           1
-#define PM_WFI_OPTIMIZATION             0 //2.4G use
+#define PM_POWER_OPTIMIZATION  1
+#define PM_WFI_OPTIMIZATION    1 //2.4G use
 
-#define ATE_CALI_OPTIMIZATION_EN              0 //2.4G use
+#define ATE_CALI_OPTIMIZATION_EN              1 //2.4G use
 
 /**
  * @brief these analog register can store data in deep sleep mode or deep sleep with SRAM retention mode.
@@ -530,10 +530,9 @@ _attribute_ram_code_sec_noinline_ void pm_set_power_mode(power_mode_e power_mode
  *              4.If the check configuration fails, reboot.
  */
 #if ATE_CALI_OPTIMIZATION_EN
-_attribute_ram_code_sec_noinline_ drv_api_status_e pm_set_dig_ldo(pm_dig_vol_mode_e vol, unsigned int dma_timeout_us, unsigned int report_rate);
-#else
-_attribute_ram_code_sec_noinline_ drv_api_status_e pm_set_dig_ldo(pm_dig_vol_mode_e vol, unsigned int dma_timeout_us);
+_attribute_ram_code_sec_noinline_ drv_api_status_e pm_set_dig_ldo_ate_cali(pm_dig_vol_mode_e vol, unsigned int dma_timeout_us, unsigned int report_rate);
 #endif
+_attribute_ram_code_sec_noinline_ drv_api_status_e pm_set_dig_ldo(pm_dig_vol_mode_e vol, unsigned int dma_timeout_us);
 
 /********************************************************************************************************
  *                                          internal

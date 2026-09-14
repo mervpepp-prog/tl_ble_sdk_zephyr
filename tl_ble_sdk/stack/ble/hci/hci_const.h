@@ -246,6 +246,7 @@
 #define HCI_LE_EVT_MASK_CONNECTION_ESTABLISH                             0x80000000
 
 
+
 #define HCI_LE_EVT_MASK_DEFAULT                                          0x0000001F
 
 
