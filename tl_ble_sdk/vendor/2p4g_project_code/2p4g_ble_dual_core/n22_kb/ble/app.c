@@ -358,7 +358,7 @@ void app_ble_init_normal(void)
     u8 error_code = blc_contr_checkControllerInitialization();
     if (error_code != INIT_SUCCESS) {
         /* It's recommended that user set some UI alarm to know the exact error, e.g. LED shine, print log */
-        write_log32(0x88880000 | error_code);
+        // write_log32(0x88880000 | error_code);
         #if (TLKAPI_DEBUG_ENABLE)
             tlkapi_send_string_data(APP_LOG_EN, "[APP][INI] Controller INIT ERROR", &error_code, 1);
             while (1) {
