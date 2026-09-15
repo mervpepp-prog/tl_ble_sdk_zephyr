@@ -47,6 +47,7 @@ file(GLOB DRIVER_SOURCES
 	${TL_BLE_SRC_DIR}/common/utility.c
 	${TL_BLE_SRC_DIR}/vendor/common/flash_prot.c
 	${TL_BLE_SRC_DIR}/vendor/common/ble_flash.c
+	${TL_BLE_SRC_DIR}/common/tl_string.c
 )
 zephyr_sources(${DRIVER_SOURCES})
 
