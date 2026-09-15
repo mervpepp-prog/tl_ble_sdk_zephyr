@@ -41,9 +41,9 @@
 
 #if(SRAM_SIZE  ==   SRAM_384K)
     #if (__PROJECT_2P4G_BLE_N22_KB_DEMO__ == 1)
-        .equ __D25F_IRAM_SIZE,   4 //128KB
+        .equ __D25F_IRAM_SIZE,   3 //128KB
         .equ __D25F_DRAM_SIZE,   2 //64KB
-        .equ __N22_IRAM_SIZE,    4 //128KB
+        .equ __N22_IRAM_SIZE,    5 //128KB
         .equ __N22_DRAM_SIZE,    2 //64KB
     #else
         .equ __D25F_IRAM_SIZE,   2 //64KB
