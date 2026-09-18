@@ -40,33 +40,6 @@ extern "C" {
 
 
 /**
- * @brief   Pairing procedure timeout (microseconds)
- *
- * Defines the maximum duration allowed for the pairing procedure before
- * it is considered failed and aborted.
- */
-#define PAIR_TIMEOUT_US                 60000000
-
-
-/**
- * @brief   Reconnection procedure timeout (microseconds)
- *
- * Defines the maximum time allowed for attempting reconnection with a
- * previously paired device.
- */
-#define RECONN_TIMEOUT_US               10000000
-
-
-/**
- * @brief   No-activity timeout in connected state (seconds)
- *
- * If no valid RF activity occurs within this duration, the connection
- * may be terminated or transitioned to idle state.
- */
-#define CON_NO_ACTIVE_TIMEOUT_S         600
-
-
-/**
  * @brief   Pairing procedure timeout (milliseconds)
  *
  * Defines the maximum duration allowed for the pairing procedure before
@@ -83,12 +56,6 @@ extern "C" {
  */
 #define    P24G_RECONN_TIMEOUT_MS            60000
 
-/**
- * @brief   Keyboard event keep-active time (milliseconds)
- *
- * Defines the duration to maintain active state after receiving keyboard events.
- */
-#define TPSLL_EVENT_ACTIVE_TIMEOUT_MS        3000
 
 #define TPSLL_PM_OPTM_LEVEL1_START_TIME_S       10 //0 for disable
 #define TPSLL_PM_OPTM_LEVEL2_START_TIME_S       (TPSLL_PM_OPTM_LEVEL1_START_TIME_S + 10) //0 for disable

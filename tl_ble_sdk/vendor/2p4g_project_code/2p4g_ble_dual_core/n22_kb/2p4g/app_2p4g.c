@@ -33,6 +33,7 @@
 volatile unsigned int timeout_flag;
 volatile tpsll_dev_status_e last_connect_status = STATE_NONE;
 static uint8_t g_stack_inited = 0;
+static uint8_t g_reconnect_enable = 0;
 
 uint8_t encrypt_key[] = {0x3A, 0x7B, 0xC2, 0x9D};
 uint8_t encrypt_key_len = 4;
@@ -282,7 +283,14 @@ _attribute_ram_code_sec_ static void app_2p4g_handle_set_state(uint8_t *data, ui
 
             if(enable)
             {
-                tpsll_enable_reconn(true);
+                if (g_stack_inited)
+                {
+                    tpsll_enable_reconn(true);
+                }
+                else
+                {
+                    g_reconnect_enable = 1;
+                }
                 tlkapi_send_string_data(APP_LOG_EN, "enter reconnect state", 0, 0);
             }
         }
@@ -455,6 +463,7 @@ _attribute_ram_code_sec_ void pp_d24g_main_loop(void)
         if (config.km_fifo_ptr && config.spp_fifo_ptr && app_ctx.flash_save_report_rate && app_dual_core_flag_ctx_ptr) {
             tpsll_stack_init(true, app_ctx.flash_save_report_rate, &config);
             tpsll_set_pair_encrypt_key(encrypt_key, encrypt_key_len);
+            tpsll_enable_reconn(g_reconnect_enable);
             g_stack_inited = 1;
             tlkapi_printf(APP_LOG_EN, "tpsll stack inited\r\n");
         }
