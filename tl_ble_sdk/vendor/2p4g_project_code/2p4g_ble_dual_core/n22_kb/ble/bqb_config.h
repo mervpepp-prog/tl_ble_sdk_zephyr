@@ -43,13 +43,13 @@
  * @brief         enable the 2M and coded phy.
  * @note          default to enable.
  */
-#define APP_LE_2M_CODED_PHY_EN 0
+#define APP_LE_2M_CODED_PHY_EN 1
 
 /**
  * @brief         enable the channel selection algorithm 2.
  * @note          default to enable.
  */
-#define APP_LE_CHANNEL_SELECTION_ALGORITHM_2_EN 0
+#define APP_LE_CHANNEL_SELECTION_ALGORITHM_2_EN 1
 
 
 /**
