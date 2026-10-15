@@ -239,11 +239,20 @@ ble_sts_t blc_ll_initHciAclDataFifo(u8 *pAclbuf, int fifo_size, int fifo_number)
 
 
 /**
- * @brief      this function is used to p @param[in]  *p - the pointer of HCI data
+ * @brief      this function is used to process HCI data
+ * @param[in]  *p - the pointer of HCI data
  * @param[in]  n - the length of HCI data
  * @return     0
  */
 int blc_hci_handler(u8 *p, int n);
+
+/**
+ * @brief      this function is used to process HCI data (table-driven dispatch)
+ * @param[in]  *p - the pointer of HCI data
+ * @param[in]  n - the length of HCI data
+ * @return     0
+ */
+int blc_hci_dispatch(u8 *p, int n);
 
 
 /**

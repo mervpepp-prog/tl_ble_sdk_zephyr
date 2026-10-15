@@ -2791,4 +2791,225 @@ ble_sts_t blc_hci_le_setHdtParamsTest(hci_le_setHdtParamTest_cmdParam_t *pCmdPar
 ble_sts_t blc_hci_refreshEncyptKey_V2(hci_refreshEncryptKeyV2_cmdParam_t *pCmdParam);
 ble_sts_t blc_hci_le_enableEncryption_V2(hci_le_enableEncryptionV2_cmdParam_t *pCmdParam);
 
+//////////////////////////////////////////////////////////////////////////////////////
+//  HCI command handlers (implemented in hci_cmd.c)
+//  signature: void hci_cmd_handle_xxx(u16 opcode, u8 *p_param)
+//  every handler replies its own HCI event via HCI_CMD_SEND_EVT(); the
+//  two-level tables and the table-driven dispatch are located in hci.c.
+//  NOTE: the declarations are unconditional - hci_cmd.h sits early in the
+//  include chain, before the feature macros are defined; the handlers and
+//  the command tables are compiled conditionally in the .c files.
+//////////////////////////////////////////////////////////////////////////////////////
+void hci_cmd_handle_empty(u16 opcode, u8 *p_param);
+void hci_cmd_handle_br_edr_stub(u16 opcode, u8 *p_param);
+
+// OGF(0x01) Link Control
+void hci_cmd_handle_inquiry(u16 opcode, u8 *p_param);
+void hci_cmd_handle_disconnect(u16 opcode, u8 *p_param);
+void hci_cmd_handle_read_remote_name_req(u16 opcode, u8 *p_param);
+void hci_cmd_handle_read_remote_ver_info(u16 opcode, u8 *p_param);
+
+// OGF(0x03) Controller & Baseband
+void hci_cmd_handle_set_event_mask(u16 opcode, u8 *p_param);
+void hci_cmd_handle_reset(u16 opcode, u8 *p_param);
+void hci_cmd_handle_write_local_name(u16 opcode, u8 *p_param);
+void hci_cmd_handle_read_local_name(u16 opcode, u8 *p_param);
+void hci_cmd_handle_set_ctrl_to_host_flow_ctrl(u16 opcode, u8 *p_param);
+void hci_cmd_handle_host_buf_size(u16 opcode, u8 *p_param);
+void hci_cmd_handle_host_num_of_complete_packets(u16 opcode, u8 *p_param);
+void hci_cmd_handle_set_evt_mask_page_2(u16 opcode, u8 *p_param);
+void hci_cmd_handle_read_auth_payload_timeout(u16 opcode, u8 *p_param);
+void hci_cmd_handle_write_auth_payload_timeout(u16 opcode, u8 *p_param);
+void hci_cmd_handle_read_afh_chn_assessment_mode(u16 opcode, u8 *p_param);
+void hci_cmd_handle_write_afh_chn_assessment_mode(u16 opcode, u8 *p_param);
+
+// OGF(0x04) Informational Parameters
+void hci_cmd_handle_read_local_ver_info(u16 opcode, u8 *p_param);
+void hci_cmd_handle_read_local_supported_cmds(u16 opcode, u8 *p_param);
+void hci_cmd_handle_read_local_supported_features(u16 opcode, u8 *p_param);
+void hci_cmd_handle_read_extended_local_supported_features(u16 opcode, u8 *p_param);
+void hci_cmd_handle_read_buffer_size_command(u16 opcode, u8 *p_param);
+void hci_cmd_handle_read_bd_addr(u16 opcode, u8 *p_param);
+
+// OGF(0x05) Status Parameters
+void hci_cmd_handle_read_rssi(u16 opcode, u8 *p_param);
+
+// OGF(0x08) LE Controller
+void hci_cmd_handle_le_set_event_mask(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_buf_size(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_local_supported_features(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_random_addr(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_advertise_parameters(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_advertising_channel_tx_power(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_advertise_data(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_scan_rsp_data(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_advertise_enable(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_scan_parameters(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_scan_enable(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_create_connection(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_create_connection_cancel(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_white_list_size(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_clear_white_list(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_add_device_to_white_list(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_remove_device_from_wl(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_connection_update(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_host_channel_classification(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_channel_map(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_remote_used_features(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_encrypt(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_random(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_start_encryption(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_long_term_key_requested_reply(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_long_term_key_requested_negative_reply(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_supported_states(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_receiver_test(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_transmitter_test(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_test_end(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_data_length(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_suggested_default_data_length(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_write_suggested_default_data_length(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_local_p256_public_key(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_generate_dhkey(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_add_device_to_resolving_list(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_remove_device_from_resolving_list(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_clear_resolving_list(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_resolving_list_size(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_peer_resolvable_address(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_local_resolvable_address(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_address_resolution_enable(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_resolvable_private_address_timeout(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_max_data_length(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_phy(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_default_phy(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_phy(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_enhanced_receiver_test(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_enhanced_transmitter_test(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_advertising_set_random_address(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_extended_advertising_parameters(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_extended_advertising_data(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_extended_scan_response_data(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_extended_advertising_enable(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_maximum_advertising_data_length(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_number_of_supported_advertising_sets(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_remove_advertising_set(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_clear_advertising_sets(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_periodic_advertising_parameters(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_periodic_advertising_data(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_periodic_advertising_enable(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_periodic_advertising_parameters_v2(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_periodic_advertising_subevent_data(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_extended_scan_parameters(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_extended_scan_enable(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_extended_create_connection(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_extended_create_connection_v2(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_periodic_advertising_create_sync(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_periodic_advertising_create_sync_cancel(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_periodic_advertising_terminate_sync(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_add_device_to_periodic_advertiser_list(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_remove_device_from_periodic_advertiser_list(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_clear_periodic_advertiser_list(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_periodic_advertiser_list_size(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_periodic_advertising_response_data(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_periodic_sync_subevent(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_transmit_power(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_rf_path_compensation(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_write_rf_path_compensation(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_privacy_mode(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_receiver_test_v3(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_connectionless_cte_transmit_parameters(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_connectionless_cte_transmit_enable(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_connectionless_iq_sampling_enable(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_connection_cte_receive_parameters(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_connection_cte_transmit_parameters(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_connection_request_enable(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_connection_response_enable(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_antenna_information(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_periodic_advertising_receive_enable(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_periodic_advertising_sync_transfer(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_periodic_advertising_set_info_transfer(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_periodic_adv_sync_transfer_parameters(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_default_periodic_adv_sync_transfer_params(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_generate_dhkey_v2(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_buffer_size_v2(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_iso_tx_sync(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_cig_parameters(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_cig_parameters_test(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_create_cis(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_remove_cig(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_accept_cis_request(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_reject_cis_request(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_create_big(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_create_big_test(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_terminate_big(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_big_create_sync(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_big_terminate_sync(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_setup_iso_data_path(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_remove_iso_data_path(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_iso_transmit_test(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_iso_receive_test(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_iso_read_test_counters(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_iso_test_end(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_host_feature(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_enhanced_read_transmit_power_level(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_remote_transmit_power_level(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_path_loss_reporting_parameters(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_path_loss_reporting_enable(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_transmit_power_reporting_enable(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_data_relate_address_changes(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_default_subrate(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_subrate_request(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_extended_advertising_parameters_v2(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_decision_data(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_decision_instructions(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_all_supported_features(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_all_remote_features(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_cs_read_local_supported_capabilities(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_cs_read_remote_supported_capabilities(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_cs_write_remote_supported_capabilities(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_cs_security_enable(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_cs_set_default_settings(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_cs_read_remote_fae_table(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_cs_write_cache_remote_fae_table(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_cs_create_config(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_cs_remove_config(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_cs_set_channel_classification(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_cs_set_procedure_parameters(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_cs_procedure_enable(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_cs_test(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_cs_test_end(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_enable_monitoring_advertisers(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_monitored_advertisers_list_size(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_remove_device_from_monitored_advertisers_list(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_add_device_to_monitored_advertisers_list(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_clear_monitored_advertisers_list(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_frame_space_update(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_sci_connection_rate_req(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_sci_set_default_rate_parameters(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_sci_set_host_feature(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_min_support_conn_interval(u16 opcode, u8 *p_param);
+
+// OGF(0x3E) Higher Data Throughput test
+void hci_cmd_handle_le_set_cig_parameters_v3(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_cig_parameters_test_v3(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_create_big_v2(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_create_big_test_v2(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_hdt_default_parameters(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_set_hdt_parameters_test(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_transmitter_test_v5(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_read_maximum_data_length_v2(u16 opcode, u8 *p_param);
+void hci_cmd_handle_refresh_encryption_key_v2(u16 opcode, u8 *p_param);
+void hci_cmd_handle_le_start_encryption_v2(u16 opcode, u8 *p_param);
+
+//////////////////////////////////////////////////////////////////////////////////////
+//  shared symbols between the command handlers (hci_cmd.c) and the table-driven
+//  dispatch (hci.c)
+//////////////////////////////////////////////////////////////////////////////////////
+extern u8 hci_cmd_evt_pending;   // reply-pending flag of the dispatch framework
+
+// build and send one HCI event, and clear the reply-pending flag
+#define HCI_CMD_SEND_EVT(evt_code, buf, len)  do { \
+    hci_cmd_evt_pending = 0; \
+    blc_hci_send_event(HCI_FLAG_EVENT_BT_STD | (evt_code), (buf), (len)); \
+} while (0)
+
 #endif /* HCI_CMD_H_ */
