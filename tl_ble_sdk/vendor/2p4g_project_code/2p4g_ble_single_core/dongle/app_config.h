@@ -172,4 +172,8 @@
 #define ESL_RAM_OPTIMIZATION 0
 #define LL_CS_SNIFFER_MODE_ENABLE 0
 
+#ifndef __CHANNEL_SOUNDING_EN__
+#define __CHANNEL_SOUNDING_EN__ 0
+#endif
+
 #include "../common/default_config.h"

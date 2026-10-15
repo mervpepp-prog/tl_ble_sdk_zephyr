@@ -88,7 +88,14 @@ _attribute_ram_code_sec_noinline_ void  ext_fast_settle_recover(void);
  */
 void ext_fast_settle_init(unsigned char tx_fast_en, unsigned char rx_fast_en, ext_fast_settle_phy_type_t phy_mask);
 
-
+/**
+ * @brief      Initialize fast settle function
+ * @param[in]  tx_fast_en - TX fast settle enable(0=disable,1=enable)
+ * @param[in]  rx_fast_en - RX fast settle enable(0=disable,1=enable)
+ *  @param[in]  phy_mask - Bitmask of EXT_FAST_SETTLE_PHY_* to initialize (1M is forced)
+ *  @return     none
+ */
+void ext_2p4g_fast_settle_init(unsigned char tx_fast_en, unsigned char rx_fast_en, ext_fast_settle_phy_type_t phy_mask);
 
 /**
  *  @brief      Select fast settle parameters by PHY type (with initialization check)
@@ -114,6 +121,5 @@ unsigned char  ext_fast_select_phy(ext_fast_settle_phy_type_t phy);
  */
 #define  blc_ll_initFastSettle(tx,rx)         do{   \
                                               ext_fast_settle_init(tx,rx,EXT_FAST_SETTLE_PHY_ALL); \
-                                              rf_set_ble_1M_mode();\
                                               }while(0);
 #endif /* DRIVERS_EXT_DRIVER_EXT_FAST_SETTLE_H_ */

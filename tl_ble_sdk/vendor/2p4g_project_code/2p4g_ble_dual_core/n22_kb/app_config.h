@@ -143,11 +143,127 @@
 
 #define  EXT_FASTSETTLE_S2_PHY_EN    0
 #define  EXT_FASTSETTLE_S8_PHY_EN    0
-#define  EXT_FASTSETTLE_6M_PHY_EN    0
 
 #define CONN_MAX_NUM_CONFIG CONN_MAX_NUM_C0_P1
 
 #define BLUETOOTH_VER BLUETOOTH_VER_5_0
+#endif
+
+///////////////////////// HCI / LE Feature Switches (APP_LE_*) /////////////////////////////////////
+// App-level switches used by the app_hci.c two-level command tables (b85m style):
+// pure app values, no stack internal macros here - keep them in sync with the LL
+// feature configuration the stack of this project is built with (the defaults
+// below mirror the effective stack config of the N22 core firmware).
+#ifndef APP_HCI_FLOW_CTRL_EN
+#define APP_HCI_FLOW_CTRL_EN                     0
+#endif
+#ifndef APP_LE_PING_AUTH_PAYLOAD_TIMEOUT_EN
+#define APP_LE_PING_AUTH_PAYLOAD_TIMEOUT_EN      0
+#endif
+#ifndef APP_LE_CHANNEL_CLASSIFICATION_EN
+#define APP_LE_CHANNEL_CLASSIFICATION_EN         0
+#endif
+#ifndef APP_LE_LEGACY_SCANNING_EN
+#define APP_LE_LEGACY_SCANNING_EN                0
+#endif
+#ifndef APP_LE_CREATE_CONN_EN
+#define APP_LE_CREATE_CONN_EN                    0
+#endif
+#ifndef APP_LE_DATA_LENGTH_EXTENSION_EN
+#define APP_LE_DATA_LENGTH_EXTENSION_EN          1
+#endif
+#ifndef APP_LE_P256KEY_EN
+#define APP_LE_P256KEY_EN                        0
+#endif
+#ifndef APP_LE_PRIVACY_EN
+#define APP_LE_PRIVACY_EN                        1
+#endif
+#ifndef APP_LE_RPA_DATA_RELATED_EN
+#define APP_LE_RPA_DATA_RELATED_EN               0
+#endif
+#ifndef APP_LE_2M_PHY_EN
+#define APP_LE_2M_PHY_EN                         1
+#endif
+#ifndef APP_LE_CODED_PHY_EN
+#define APP_LE_CODED_PHY_EN                      0
+#endif
+#ifndef APP_LE_HDT_EN
+#define APP_LE_HDT_EN                            0
+#endif
+#ifndef APP_LE_PHY_TEST_EN
+#define APP_LE_PHY_TEST_EN                       0
+#endif
+#ifndef APP_LE_EXTENDED_ADV_EN
+#define APP_LE_EXTENDED_ADV_EN                   0
+#endif
+#ifndef APP_LE_PERIODIC_ADV_EN
+#define APP_LE_PERIODIC_ADV_EN                   0
+#endif
+#ifndef APP_PAWR_ADV_EN
+#define APP_PAWR_ADV_EN                          0
+#endif
+#ifndef APP_PAWR_SCAN_EN
+#define APP_PAWR_SCAN_EN                         0
+#endif
+#ifndef APP_LE_EXTENDED_SCAN_EN
+#define APP_LE_EXTENDED_SCAN_EN                  0
+#endif
+#ifndef APP_LE_EXTENDED_INIT_EN
+#define APP_LE_EXTENDED_INIT_EN                  0
+#endif
+#ifndef APP_LE_PERIODIC_ADV_SYNC_EN
+#define APP_LE_PERIODIC_ADV_SYNC_EN              0
+#endif
+#ifndef APP_LE_AOA_AOD_EN
+#define APP_LE_AOA_AOD_EN                        0
+#endif
+#ifndef APP_LE_PAST_EN
+#define APP_LE_PAST_EN                           0
+#endif
+#ifndef APP_LE_ISO_EN
+#define APP_LE_ISO_EN                            0
+#endif
+#ifndef APP_LE_CIS_CENTRAL_EN
+#define APP_LE_CIS_CENTRAL_EN                    0
+#endif
+#ifndef APP_LE_CIS_PERIPHERAL_EN
+#define APP_LE_CIS_PERIPHERAL_EN                 0
+#endif
+#ifndef APP_LE_BIG_BROADCASTER_EN
+#define APP_LE_BIG_BROADCASTER_EN                0
+#endif
+#ifndef APP_LE_BIG_SYNC_EN
+#define APP_LE_BIG_SYNC_EN                       0
+#endif
+#ifndef APP_LE_ISO_TEST_EN
+#define APP_LE_ISO_TEST_EN                       0
+#endif
+#ifndef APP_LE_POWER_CONTROL_EN
+#define APP_LE_POWER_CONTROL_EN                  0
+#endif
+#ifndef APP_LE_SUBRATE_EN
+#define APP_LE_SUBRATE_EN                        0
+#endif
+#ifndef APP_LE_ADV_CODING_SEL_EN
+#define APP_LE_ADV_CODING_SEL_EN                 0
+#endif
+#ifndef APP_LE_DBAF_EN
+#define APP_LE_DBAF_EN                           0
+#endif
+#ifndef APP_LE_EXTENDED_FEATURE_SET_EN
+#define APP_LE_EXTENDED_FEATURE_SET_EN           0
+#endif
+#ifndef APP_LE_CHANNEL_SOUNDING_EN
+#define APP_LE_CHANNEL_SOUNDING_EN               0
+#endif
+#ifndef APP_LE_MONITORING_ADVERTISERS_EN
+#define APP_LE_MONITORING_ADVERTISERS_EN         0
+#endif
+#ifndef APP_LE_FRAME_SPACE_UPDATE_EN
+#define APP_LE_FRAME_SPACE_UPDATE_EN             0
+#endif
+#ifndef APP_LE_SCI_EN
+#define APP_LE_SCI_EN                            0
 #endif
 
 #include "../common/default_config.h"

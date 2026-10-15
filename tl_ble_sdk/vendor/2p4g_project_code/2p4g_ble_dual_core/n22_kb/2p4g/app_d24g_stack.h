@@ -41,7 +41,7 @@ typedef fifo_cb_t kb_cb_t;
 
 #define APP_DEFAULT_REPORT_RATE     REPORT_RATE_8K //fixed
 
-#define PAIRING_TX_POWER_DEFAULT    RF_POWER_N4p70dBm
+#define PAIRING_TX_POWER_DEFAULT    RF_POWER_P0p00dBm
 
 typedef enum
 {
