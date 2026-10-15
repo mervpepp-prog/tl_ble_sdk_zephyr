@@ -84,63 +84,6 @@
 #endif
 
 ///////////////////////// Application Configuration ////////////////////////////////////////////////////
-#if BLC_ZEPHYR_BLE_INTEGRATION
-#define BLMS_PM_ENABLE 1
-
-#undef ACL_CENTRAL_MAX_NUM
-#define ACL_CENTRAL_MAX_NUM 0
-
-#undef ACL_PERIPHR_MAX_NUM
-#define ACL_PERIPHR_MAX_NUM 1
-
-#define BLUETOOTH_VER BLUETOOTH_VER_5_0
-
-#define CUSTOM_DARWIN_FMN_ENABLE 0
-#define ULL_FOR_CIS_EN 0
-#define DOCKKIT_MODIFY_ATT_RSP_LEN_EN 0
-#define LL_FEATURE_SUPPORT_LE_PING 0
-#define LL_FEATURE_SUPPORT_PRIVACY 1
-#define LL_FEATURE_SUPPORT_LE_CODED_PHY 1
-#define LL_FEATURE_SUPPORT_REMOTE_PUBLIC_KEY_VALIDATION 0
-#define LL_FEATURE_SUPPORT_LE_EXTENDED_ADVERTISING 0
-#define LL_FEATURE_SUPPORT_LE_LEGACY_SCANNING 0
-#define LL_FEATURE_SUPPORT_LE_EXTENDED_SCANNING 0
-#define LL_FEATURE_SUPPORT_LE_EXTENDED_INITIATE 0
-
-#define LL_FEATURE_SUPPORT_LE_PERIODIC_ADVERTISING 0
-#define LL_FEATURE_SUPPORT_LE_PERIODIC_ADVERTISING_SYNC 0
-#define LL_FEATURE_SUPPORT_PERIODIC_ADVERTISING_WITH_RESPONSES_ADVERTISER 0
-#define LL_FEATURE_SUPPORT_LE_PAST_SENDER 0
-#define LL_FEATURE_SUPPORT_LE_PAST_RECIPIENT 0
-
-#define LL_FEATURE_SUPPORT_CHANNEL_SELECTION_ALGORITHM2 0
-#define LL_FEATURE_SUPPORT_PHY_TEST_MODE                            1
-#define LL_FEATURE_SUPPORT_ISOCHRONOUS_CHANNELS 0
-#define LL_FEATURE_SUPPORT_ISOCHRONOUS_TEST_MODE 0
-#define LL_FEATURE_SUPPORT_CONNECTION_SUBRATING_HOST 0
-#define LL_FEATURE_SUPPORT_CHANNEL_CLASSIFICATION 0
-#define LL_FEATURE_SUPPORT_ADVERTISING_CODING_SELECTION 0
-#define LL_FEATURE_SUPPORT_ADVERTISING_CODING_SELECT_HOST_SUPPORT 0
-
-#define LL_FEATURE_SUPPORT_EXTENDED_FEATURE_SET 0
-#define HARDWARE_CHANNEL_SOUNDING_SUPPORT_EN 0
-#define LL_FEATURE_SUPPORT_MONITORING_ADVERTISERS 0
-#define LL_FEATURE_SUPPORT_FRAME_SPACE_UPDATE 0
-#define L2CAP_CREDIT_BASED_FLOW_CONTROL_MODE_EN 0
-#define L2CAP_SERVER_FEATURE_SUPPORTED_EATT 0
-#define CIS_ADD_CIE 0
-#define CIS_CIE_CENTRAL_OPTIMIZE 0
-#define CIS_TSK_JUMP_ADD_PDU 0
-#define FANQH_OPTIMIZE_BIS_API 0
-#define SMP_REAL_ENCRYPTION_BUSY_ENABLE 0
-#define OS_SUP_EN 0
-#define OS_SUP_LONG_SLEEP 0
-#define UPDATE_SCHEDULER_FOR_PAWR_RSP 0
-
-#define LL_FEATURE_SUPPORT_PERIODIC_ADVERTISING_WITH_RESPONSES_SCANNER 0
-
-#define LL_ACL_CEN_EN 0
-#endif
 
 
 ///////////////////////// UI Configuration ////////////////////////////////////////////////////
@@ -198,5 +141,170 @@
 #define DUAL_CORE_MODE_ENABLED 1
 
 #define CS_USE_TX_POWER_LEVEL RF_POWER_P6p50dBm
+
+///////////////////////// LE Feature Switches /////////////////////////////////////
+
+#define HARDWARE_CHANNEL_SOUNDING_SUPPORT_EN 0
+
+#if 1
+#define BLMS_PM_ENABLE 1
+
+#undef ACL_CENTRAL_MAX_NUM
+#define ACL_CENTRAL_MAX_NUM 0
+
+#undef ACL_PERIPHR_MAX_NUM
+#define ACL_PERIPHR_MAX_NUM 1
+
+#define CONN_MAX_NUM_CONFIG CONN_MAX_NUM_C0_P1
+
+#define BLUETOOTH_VER BLUETOOTH_VER_5_0
+
+#define ULL_FOR_CIS_EN 0
+#define OS_SUP_EN 0
+#define OS_SUP_LONG_SLEEP 0
+
+#define  EXT_FASTSETTLE_S2_PHY_EN    0
+#define  EXT_FASTSETTLE_S8_PHY_EN    0
+
+#define LL_FEATURE_SUPPORT_LE_PING 0
+#define LL_FEATURE_SUPPORT_LE_CODED_PHY 0
+#define LL_FEATURE_SUPPORT_REMOTE_PUBLIC_KEY_VALIDATION 0
+#define LL_FEATURE_SUPPORT_LE_EXTENDED_ADVERTISING 0
+#define LL_FEATURE_SUPPORT_LE_LEGACY_SCANNING 0
+#define LL_FEATURE_SUPPORT_LE_EXTENDED_SCANNING 0
+#define LL_FEATURE_SUPPORT_LE_EXTENDED_INITIATE 0
+#define LL_FEATURE_SUPPORT_LE_PERIODIC_ADVERTISING 0
+#define LL_FEATURE_SUPPORT_LE_PERIODIC_ADVERTISING_SYNC 0
+#define LL_FEATURE_SUPPORT_PERIODIC_ADVERTISING_WITH_RESPONSES_ADVERTISER 0
+#define LL_FEATURE_SUPPORT_LE_PAST_SENDER 0
+#define LL_FEATURE_SUPPORT_LE_PAST_RECIPIENT 0
+#define LL_FEATURE_SUPPORT_ISOCHRONOUS_CHANNELS 0
+#define LL_FEATURE_SUPPORT_ISOCHRONOUS_TEST_MODE 0
+#define LL_FEATURE_SUPPORT_CONNECTION_SUBRATING_HOST 0
+#define LL_FEATURE_SUPPORT_CHANNEL_CLASSIFICATION 0
+#define LL_FEATURE_SUPPORT_ADVERTISING_CODING_SELECTION 0
+#define LL_FEATURE_SUPPORT_ADVERTISING_CODING_SELECT_HOST_SUPPORT 0
+#define LL_FEATURE_SUPPORT_PERIPHERAL_INITIATED_FEATURES_EXCHANGE 0
+#define LL_FEATURE_SUPPORT_EXTENDED_FEATURE_SET 0
+#define LL_FEATURE_SUPPORT_CHANNEL_SOUNDING_REFLECTOR 0
+#define LL_FEATURE_SUPPORT_CHANNEL_SOUNDING_INITIATOR 0
+#define LL_FEATURE_SUPPORT_CS_TEST 0
+#define LL_FEATURE_SUPPORT_MONITORING_ADVERTISERS 0
+#define LL_FEATURE_SUPPORT_MONITORING_ADVERTISERS 0
+#define LL_FEATURE_SUPPORT_FRAME_SPACE_UPDATE 0
+#define LL_FEATURE_SUPPORT_PERIODIC_ADVERTISING_WITH_RESPONSES_SCANNER 0
+#define LL_FEATURE_SUPPORT_HIGHER_DATA_THROUGHPUT 0
+#define LL_FEATURE_SUPPORT_PHY_TEST_MODE 1
+#define LL_FEATURE_SUPPORT_LE_2M_PHY 1
+#define LL_FEATURE_SUPPORT_LE_CODED_PHY 0
+#endif
+
+///////////////////////// HCI / LE Feature Switches (APP_LE_*) /////////////////////////////////////
+// App-level switches used by the app_hci.c two-level command tables (b85m style):
+// pure app values, no stack internal macros here - keep them in sync with the LL
+// feature configuration the stack of this project is built with (the defaults
+// below mirror the effective stack config of this project).
+// NOTE: APP_LE_EXTENDED_ADV_EN/APP_LE_PERIODIC_ADV_EN/APP_LE_EXTENDED_SCAN_EN/
+// APP_LE_EXTENDED_INIT_EN/APP_LE_PHY_TEST_EN are defined in bqb_config.h,
+// APP_PAWR_EN/APP_PAST_EN/APP_POWER_CONTROL/APP_LE_CHANNEL_SOUNDING are defined
+// above; they keep controlling both the LL module init and the app_hci command
+// table entries.
+#ifndef APP_HCI_FLOW_CTRL_EN
+#define APP_HCI_FLOW_CTRL_EN                     0
+#endif
+#ifndef APP_LE_PING_AUTH_PAYLOAD_TIMEOUT_EN
+#define APP_LE_PING_AUTH_PAYLOAD_TIMEOUT_EN      0
+#endif
+#ifndef APP_LE_CHANNEL_CLASSIFICATION_EN
+#define APP_LE_CHANNEL_CLASSIFICATION_EN         0
+#endif
+#ifndef APP_LE_LEGACY_SCANNING_EN
+#define APP_LE_LEGACY_SCANNING_EN                0
+#endif
+#ifndef APP_LE_CREATE_CONN_EN
+#define APP_LE_CREATE_CONN_EN                    0
+#endif
+#ifndef APP_LE_DATA_LENGTH_EXTENSION_EN
+#define APP_LE_DATA_LENGTH_EXTENSION_EN          1
+#endif
+#ifndef APP_LE_P256KEY_EN
+#define APP_LE_P256KEY_EN                        0
+#endif
+#ifndef APP_LE_PRIVACY_EN
+#define APP_LE_PRIVACY_EN                        1
+#endif
+#ifndef APP_LE_RPA_DATA_RELATED_EN
+#define APP_LE_RPA_DATA_RELATED_EN               0
+#endif
+#ifndef APP_LE_2M_PHY_EN
+#define APP_LE_2M_PHY_EN                         1
+#endif
+#ifndef APP_LE_CODED_PHY_EN
+#define APP_LE_CODED_PHY_EN                      0
+#endif
+#ifndef APP_LE_HDT_EN
+#define APP_LE_HDT_EN                            0
+#endif
+#ifndef APP_PAWR_ADV_EN
+#define APP_PAWR_ADV_EN                          (APP_PAWR_EN)
+#endif
+#ifndef APP_PAWR_SCAN_EN
+#define APP_PAWR_SCAN_EN                         (APP_PAWR_EN)
+#endif
+#ifndef APP_LE_PERIODIC_ADV_SYNC_EN
+#define APP_LE_PERIODIC_ADV_SYNC_EN              0
+#endif
+#ifndef APP_LE_AOA_AOD_EN
+#define APP_LE_AOA_AOD_EN                        0
+#endif
+#ifndef APP_LE_PAST_EN
+#define APP_LE_PAST_EN                           (APP_PAST_EN)
+#endif
+#ifndef APP_LE_ISO_EN
+#define APP_LE_ISO_EN                            0
+#endif
+#ifndef APP_LE_CIS_CENTRAL_EN
+#define APP_LE_CIS_CENTRAL_EN                    0
+#endif
+#ifndef APP_LE_CIS_PERIPHERAL_EN
+#define APP_LE_CIS_PERIPHERAL_EN                 0
+#endif
+#ifndef APP_LE_BIG_BROADCASTER_EN
+#define APP_LE_BIG_BROADCASTER_EN                0
+#endif
+#ifndef APP_LE_BIG_SYNC_EN
+#define APP_LE_BIG_SYNC_EN                       0
+#endif
+#ifndef APP_LE_ISO_TEST_EN
+#define APP_LE_ISO_TEST_EN                       0
+#endif
+#ifndef APP_LE_POWER_CONTROL_EN
+#define APP_LE_POWER_CONTROL_EN                  (APP_POWER_CONTROL)
+#endif
+#ifndef APP_LE_SUBRATE_EN
+#define APP_LE_SUBRATE_EN                        0
+#endif
+#ifndef APP_LE_ADV_CODING_SEL_EN
+#define APP_LE_ADV_CODING_SEL_EN                 0
+#endif
+#ifndef APP_LE_DBAF_EN
+#define APP_LE_DBAF_EN                           0
+#endif
+#ifndef APP_LE_EXTENDED_FEATURE_SET_EN
+#define APP_LE_EXTENDED_FEATURE_SET_EN           0
+#endif
+#ifndef APP_LE_CHANNEL_SOUNDING_EN
+#define APP_LE_CHANNEL_SOUNDING_EN               (APP_LE_CHANNEL_SOUNDING)
+#endif
+#ifndef APP_LE_MONITORING_ADVERTISERS_EN
+#define APP_LE_MONITORING_ADVERTISERS_EN         0
+#endif
+#ifndef APP_LE_FRAME_SPACE_UPDATE_EN
+#define APP_LE_FRAME_SPACE_UPDATE_EN             0
+#endif
+#ifndef APP_LE_SCI_EN
+#define APP_LE_SCI_EN                            0
+#endif
+
 #include "../common/default_config.h"
 #include "bqb_config.h"

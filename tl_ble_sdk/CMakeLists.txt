@@ -19,6 +19,9 @@ if(APPLE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "" CACHE STRING "" FORCE)
 endif()
 
+set(TLK_CMAKE_TEMPLATE_VERSION "1.3.0")
+message(STATUS "Telink CMake template version: ${TLK_CMAKE_TEMPLATE_VERSION}")
+
 if(NOT DEFINED PROJECT_NAME)
     file(GLOB_RECURSE JSON_FILES "${CMAKE_SOURCE_DIR}/cmake_configs/*_cmake.json")
     list(LENGTH JSON_FILES FILE_COUNT)
@@ -42,12 +45,36 @@ endif()
 
 file(READ "${CONFIG_FILE}" CONFIG_JSON)
 string(JSON NAME GET ${CONFIG_JSON} name)
+string(JSON TLK_SOURCE_LINK_ORDER ERROR_VARIABLE TLK_SOURCE_LINK_ORDER_ERROR GET "${CONFIG_JSON}" source_link_order)
+if(TLK_SOURCE_LINK_ORDER_ERROR)
+    set(TLK_SOURCE_LINK_ORDER "LEGACY")
+else()
+    string(TOUPPER "${TLK_SOURCE_LINK_ORDER}" TLK_SOURCE_LINK_ORDER)
+    if(NOT TLK_SOURCE_LINK_ORDER STREQUAL "IOT_STUDIO" AND
+       NOT TLK_SOURCE_LINK_ORDER STREQUAL "LEGACY")
+        message(WARNING "Unknown source_link_order=${TLK_SOURCE_LINK_ORDER}; using legacy.")
+        set(TLK_SOURCE_LINK_ORDER "LEGACY")
+    endif()
+endif()
+string(JSON TLK_TARGET_OUTPUT_LAYOUT ERROR_VARIABLE TLK_TARGET_OUTPUT_LAYOUT_ERROR GET "${CONFIG_JSON}" target_output_layout)
+if(TLK_TARGET_OUTPUT_LAYOUT_ERROR)
+    set(TLK_TARGET_OUTPUT_LAYOUT "LEGACY")
+else()
+    string(TOUPPER "${TLK_TARGET_OUTPUT_LAYOUT}" TLK_TARGET_OUTPUT_LAYOUT)
+    if(NOT TLK_TARGET_OUTPUT_LAYOUT STREQUAL "LEGACY" AND
+       NOT TLK_TARGET_OUTPUT_LAYOUT STREQUAL "PER_TARGET")
+        message(WARNING "Unknown target_output_layout=${TLK_TARGET_OUTPUT_LAYOUT}; using legacy.")
+        set(TLK_TARGET_OUTPUT_LAYOUT "LEGACY")
+    endif()
+endif()
 string(JSON PROJECT_LANG GET ${CONFIG_JSON} language)
 if(NOT PROJECT_LANG)
     set(PROJECT_LANG 'c')
 endif()
 
 message(STATUS "Project: ${NAME}")
+message(STATUS "Source object link order: ${TLK_SOURCE_LINK_ORDER}")
+message(STATUS "Target output layout: ${TLK_TARGET_OUTPUT_LAYOUT}")
 message(STATUS "language: ${PROJECT_LANG}")
 message(STATUS "COMPILER: ${COMPILER}")
 
@@ -175,6 +202,10 @@ function(json_to_list1 JSON_ARRAY_STRING OUTPUT_LIST)
         foreach(INDEX RANGE 0 ${LAST_INDEX})
             string(JSON ELEMENT GET "${JSON_ARRAY_STRING}" ${INDEX})
             string(CONFIGURE "${ELEMENT}" ELEMENT)
+            string(STRIP "${ELEMENT}" STRIPPED_ELEMENT)
+            if(STRIPPED_ELEMENT STREQUAL "")
+                continue()
+            endif()
             foreach(ELEMENT_ITEM ${ELEMENT})
                 list(APPEND LOCAL_OUTPUT_LIST ${ELEMENT_ITEM})
             endforeach()
@@ -222,8 +253,69 @@ function(include_source RESULT_VAR RELATIVE_PATH)
     set(${RESULT_VAR} ${${RESULT_VAR}} ${RELATIVE_PATH} PARENT_SCOPE)
 endfunction()
 
+# Telink IoT Studio emits object files by visiting child directories in
+# descending order, followed by source files in the current directory.
+function(_order_sources_like_telink_studio PREFIX OUTPUT_VAR)
+    set(_studio_child_dirs "")
+    set(_studio_files "")
+    set(_studio_ordered "")
+    foreach(_studio_source IN LISTS ARGN)
+        if("${PREFIX}" STREQUAL "")
+            set(_studio_relative "${_studio_source}")
+        else()
+            string(LENGTH "${PREFIX}" _studio_prefix_length)
+            math(EXPR _studio_relative_start "${_studio_prefix_length} + 1")
+            string(SUBSTRING "${_studio_source}" "${_studio_relative_start}" "-1" _studio_relative)
+        endif()
+
+        string(FIND "${_studio_relative}" "/" _studio_slash_index)
+        if(_studio_slash_index GREATER -1)
+            string(SUBSTRING "${_studio_relative}" 0 "${_studio_slash_index}" _studio_child_dir)
+            list(APPEND _studio_child_dirs "${_studio_child_dir}")
+        else()
+            list(APPEND _studio_files "${_studio_source}")
+        endif()
+    endforeach()
+
+    if(_studio_child_dirs)
+        list(REMOVE_DUPLICATES _studio_child_dirs)
+        list(SORT _studio_child_dirs)
+        list(REVERSE _studio_child_dirs)
+    endif()
+
+    foreach(_studio_child_dir IN LISTS _studio_child_dirs)
+        if("${PREFIX}" STREQUAL "")
+            set(_studio_child_prefix "${_studio_child_dir}")
+        else()
+            set(_studio_child_prefix "${PREFIX}/${_studio_child_dir}")
+        endif()
+        set(_studio_child_sources "")
+        foreach(_studio_source IN LISTS ARGN)
+            string(FIND "${_studio_source}" "${_studio_child_prefix}/" _studio_child_index)
+            if(_studio_child_index EQUAL 0)
+                list(APPEND _studio_child_sources "${_studio_source}")
+            endif()
+        endforeach()
+        set(_studio_child_ordered "")
+        _order_sources_like_telink_studio(
+            "${_studio_child_prefix}" _studio_child_ordered ${_studio_child_sources}
+        )
+        list(APPEND _studio_ordered ${_studio_child_ordered})
+    endforeach()
+
+    if(_studio_files)
+        list(SORT _studio_files)
+        list(APPEND _studio_ordered ${_studio_files})
+    endif()
+    set(${OUTPUT_VAR} "${_studio_ordered}" PARENT_SCOPE)
+endfunction()
+
 function(add_missing_bin_relink_guard target_name objcopy_tool)
     set(_ensure_script "${CMAKE_CURRENT_BINARY_DIR}/check_missing_bin_and_remove_elf.cmake")
+    set(_target_output_dir "${CMAKE_CURRENT_BINARY_DIR}")
+    if(TLK_TARGET_OUTPUT_LAYOUT STREQUAL "PER_TARGET")
+        set(_target_output_dir "${CMAKE_CURRENT_BINARY_DIR}/${target_name}")
+    endif()
     file(WRITE "${_ensure_script}" [=[
 if(NOT EXISTS "${BIN_FILE}" AND EXISTS "${ELF_FILE}")
     message(STATUS "[ensure_bin] ${BIN_FILE} missing, removing ${ELF_FILE} to force relink")
@@ -233,8 +325,8 @@ endif()
 
     add_custom_target(${target_name}_ensure_bin
         COMMAND ${CMAKE_COMMAND}
-            -DBIN_FILE=${CMAKE_CURRENT_BINARY_DIR}/${target_name}.bin
-            -DELF_FILE=${CMAKE_CURRENT_BINARY_DIR}/${target_name}.elf
+            -DBIN_FILE=${_target_output_dir}/${target_name}.bin
+            -DELF_FILE=${_target_output_dir}/${target_name}.elf
             -P "${_ensure_script}"
         COMMENT "Ensure ${target_name}.bin exists"
         VERBATIM
@@ -350,13 +442,22 @@ foreach(INDEX RANGE 0 ${TARGETS_LAST_INDEX})
             continue()
         endif()
         include_sources(SOURCES SOURCE_DIR_LIST)
+        if(TLK_SOURCE_LINK_ORDER STREQUAL "IOT_STUDIO")
+            set(_studio_ordered_sources "")
+            _order_sources_like_telink_studio("" _studio_ordered_sources ${SOURCES})
+            set(SOURCES ${_studio_ordered_sources})
+        endif()
     else()
         message(STATUS "No SOURCE_DIR found for target ${TARGET_NAME} json, skipping...")
         continue()
     endif()
     add_executable(${TARGET_NAME} ${SOURCES})
+    set(TARGET_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}")
     set_target_properties(${TARGET_NAME} PROPERTIES SUFFIX ".elf")
-    # set_target_properties(${TARGET_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY  ${TARGET_NAME})
+    if(TLK_TARGET_OUTPUT_LAYOUT STREQUAL "PER_TARGET")
+        set(TARGET_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}")
+        set_target_properties(${TARGET_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${TARGET_OUTPUT_DIR}")
+    endif()
 
     target_compile_options(${TARGET_NAME} PRIVATE $<$<COMPILE_LANGUAGE:ASM>: ${GLOBAL_OPTS_LIST} ${ASM_OPTS_LIST}>)
     target_compile_options(${TARGET_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>: ${GLOBAL_OPTS_LIST} ${C_OPTS_LIST}>)
@@ -399,8 +500,9 @@ foreach(INDEX RANGE 0 ${TARGETS_LAST_INDEX})
         json_to_list(${OBJ_COPY} OBJ_COPY_LIST)
         add_missing_bin_relink_guard(${TARGET_NAME} ${CMAKE_OBJCOPY} ${OBJ_COPY_LIST})
         add_custom_command(TARGET ${TARGET_NAME} 
-            POST_BUILD COMMAND ${CMAKE_OBJCOPY} ${OBJ_COPY_LIST} ${TARGET_NAME}.elf ${TARGET_NAME}.bin
-            BYPRODUCTS ${TARGET_NAME}.bin
+            POST_BUILD COMMAND ${CMAKE_OBJCOPY} ${OBJ_COPY_LIST} $<TARGET_FILE:${TARGET_NAME}> ${TARGET_OUTPUT_DIR}/${TARGET_NAME}.bin
+            BYPRODUCTS ${TARGET_OUTPUT_DIR}/${TARGET_NAME}.bin
+            WORKING_DIRECTORY "${TARGET_OUTPUT_DIR}"
         )
     endif()
 
@@ -408,15 +510,19 @@ foreach(INDEX RANGE 0 ${TARGETS_LAST_INDEX})
     if(OBJ_DUMP)  
         json_to_list(${OBJ_DUMP} OBJ_DUMP_LIST)
         add_custom_command(TARGET ${TARGET_NAME} 
-            POST_BUILD COMMAND ${CMAKE_OBJDUMP} ${OBJ_DUMP_LIST} ${TARGET_NAME}.elf > ${TARGET_NAME}.lst
-            BYPRODUCTS ${TARGET_NAME}.lst
+            POST_BUILD COMMAND ${CMAKE_OBJDUMP} ${OBJ_DUMP_LIST} $<TARGET_FILE:${TARGET_NAME}> > ${TARGET_OUTPUT_DIR}/${TARGET_NAME}.lst
+            BYPRODUCTS ${TARGET_OUTPUT_DIR}/${TARGET_NAME}.lst
+            WORKING_DIRECTORY "${TARGET_OUTPUT_DIR}"
         )
     endif()
 
     string(JSON PRINT_SIZE GET ${TARGET_JSON} print_size)
     if(PRINT_SIZE)  
         json_to_list(${PRINT_SIZE} PRINT_SIZE_LIST)
-        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD COMMAND ${CMAKE_PRINTSIZE} ${PRINT_SIZE_LIST} ${TARGET_NAME}.elf)
+        add_custom_command(TARGET ${TARGET_NAME}
+            POST_BUILD COMMAND ${CMAKE_PRINTSIZE} ${PRINT_SIZE_LIST} $<TARGET_FILE:${TARGET_NAME}>
+            WORKING_DIRECTORY "${TARGET_OUTPUT_DIR}"
+        )
     endif()
 
     string(JSON PRE_BUILD GET ${TARGET_JSON} pre_build)
@@ -451,9 +557,15 @@ foreach(INDEX RANGE 0 ${TARGETS_LAST_INDEX})
             list(GET POST_BUILD_COMMAND 0 POST_BUILD_EXECUTABLE)
             if(POST_BUILD_EXECUTABLE MATCHES "\\.sh$")
                 find_program(TLK_SHELL_EXECUTABLE NAMES bash sh REQUIRED)
-                add_custom_command(TARGET ${TARGET_NAME} POST_BUILD COMMAND ${TLK_SHELL_EXECUTABLE} ${POST_BUILD_COMMAND})
+                add_custom_command(TARGET ${TARGET_NAME}
+                    POST_BUILD COMMAND ${TLK_SHELL_EXECUTABLE} ${POST_BUILD_COMMAND}
+                    WORKING_DIRECTORY "${TARGET_OUTPUT_DIR}"
+                )
             else()
-                add_custom_command(TARGET ${TARGET_NAME} POST_BUILD COMMAND ${POST_BUILD_COMMAND})
+                add_custom_command(TARGET ${TARGET_NAME}
+                    POST_BUILD COMMAND ${POST_BUILD_COMMAND}
+                    WORKING_DIRECTORY "${TARGET_OUTPUT_DIR}"
+                )
             endif()
         endforeach()
     endif()

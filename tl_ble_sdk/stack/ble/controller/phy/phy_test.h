@@ -26,6 +26,8 @@
 
 #include "tl_common.h"
 
+typedef int (*blc_phy_test_handler_t)(void);
+
 #define BLC_PHYTEST_DISABLE 0
 #define BLC_PHYTEST_ENABLE  1
 
