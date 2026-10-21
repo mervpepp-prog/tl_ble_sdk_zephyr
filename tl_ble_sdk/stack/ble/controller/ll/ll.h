@@ -50,6 +50,7 @@ typedef enum
     BLT_EV_FLAG_WFI_ENTER,
     BLT_EV_FLAG_WFI_EXIT,
     BLT_EV_FLAG_CHECK_BEFORE_SLEEP_ENTER,// Final check before entering PM sleep
+    BLT_EV_FLAG_EARLY_SUSPEND_EXIT,//Fired on suspend wakeup exit after RF restore; the user's handler must finish within 30us (no printing)
     BLT_EV_MAX_NUM,
 } blt_ev_flag_t;
 

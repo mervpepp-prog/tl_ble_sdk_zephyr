@@ -117,7 +117,7 @@ typedef struct{
 
 extern fsu_cmplet_evt_t fsuCmpletEvt;
 
-/* FSU task callback flags ¡ª single callback handles all FSU operations.
+/* FSU task callback flags — single callback handles all FSU operations.
  * p parameter: FLAG_FSU_RESET/CONN_RESET/MAINLOOP -> (void*)(u32)connHandle,
  *              FLAG_FSU_START/GET_MCES/TX_WAIT/POST -> (void*)st_ll_conn_t* */
 enum {

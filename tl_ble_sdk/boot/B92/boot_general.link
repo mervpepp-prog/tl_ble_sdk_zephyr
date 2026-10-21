@@ -50,6 +50,11 @@ SECTIONS
     PROVIDE (_RETENTION_DATA_VMA_END = .); 
     
     . = ALIGN(8);
+    PROVIDE (_IRAM_REBOOT_RETENTION_VMA_START = .);
+    .iram_rbt_ret (NOLOAD): { KEEP(*(.iram_rbt_ret )) }
+    PROVIDE (_IRAM_REBOOT_RETENTION_VMA_END = .);
+    
+    . = ALIGN(8);
     .ram_code   : AT( ALIGN(LOADADDR (.retention_data) + SIZEOF (.retention_data),8)) 
         { KEEP(*(.ram_code )) KEEP(*libgcc.a:save-restore.o) KEEP(*(.exec.itable)) }
     PROVIDE (_RAMCODE_VMA_END = .);
@@ -66,8 +71,10 @@ SECTIONS
     PROVIDE (_IRAM_BSS_VMA_END = .);
     
     . = ALIGN(LOADADDR (.ram_code) + SIZEOF (.ram_code), 8);
+    PROVIDE (__stext = .);
     .text           : AT(ALIGN(LOADADDR (.ram_code) + SIZEOF (.ram_code), 8)) 
         { *(.text .stub .text.* .gnu.linkonce.t.* ) KEEP(*(.text.*personality* )) *(.gnu.warning )  }
+    PROVIDE (__etext = .);
     .rodata         : AT(ALIGN(LOADADDR (.text) + SIZEOF (.text), ALIGNOF(.rodata))) 
         { *(.rodata .rodata.* .gnu.linkonce.r.* ) }
     .eh_frame_hdr   : AT(ALIGN(LOADADDR (.rodata) + SIZEOF (.rodata), ALIGNOF(.eh_frame_hdr)))

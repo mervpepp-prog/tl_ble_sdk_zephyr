@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>TL_BLE_SDK_B92</name>
+	<name>B92_ble_multi_conn_src</name>
 	<comment></comment>
 	<projects>
 	</projects>
 	<buildSpec>
 		<buildCommand>
 			<name>org.eclipse.cdt.managedbuilder.core.genmakebuilder</name>
-			<triggers>clean,full,incremental,</triggers>
+			<triggers>full,incremental,</triggers>
 			<arguments>
 				<dictionary>
 					<key>?name?</key>
@@ -98,7 +98,7 @@
 		<link>
 			<name>boot</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/boot/B92</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/boot</locationURI>
 		</link>
 		<link>
 			<name>common</name>
@@ -113,7 +113,7 @@
 		<link>
 			<name>drivers</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/B92</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers</locationURI>
 		</link>
 		<link>
 			<name>drivers.h</name>

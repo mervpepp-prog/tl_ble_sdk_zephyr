@@ -107,7 +107,7 @@ static inline void adc_clk_dis(void)
  */
 static inline void adc_set_clk(void)
 {
-    reg_adc_config1 = ((reg_adc_config1 & FLD_SAR_ADC_CLK_DIV) | 1); //div=1, adc digital clk = 24MHz/div.(crystal = 24MHz)
+    reg_adc_config1 = ((reg_adc_config1 & ~FLD_SAR_ADC_CLK_DIV) | 1); //div=1, adc digital clk = 24MHz/div.(crystal = 24MHz)
     analog_write_reg8(areg_adc_sample_clk_div, 5);                   //div=5, adc analog clk = 24MHz/(1+div) = 4M.
 }
 
@@ -729,7 +729,7 @@ void adc_set_vbat_calib_vref(unsigned short vref, signed char offset)
 void adc_set_dma_config(dma_chn_e chn)
 {
     adc_dma_chn     = chn;
-    reg_adc_config2 = FLD_RX_DMA_ENABLE;
+    reg_adc_config2 |= FLD_RX_DMA_ENABLE;
     dma_config(chn, &adc_rx_dma_config);
     reg_dma_llp(adc_dma_chn) = 0;
     /*
@@ -907,7 +907,7 @@ _attribute_flash_code_sec_noinline_ void adc_anti_aging_mode_flashcode_for_asm(v
     reg_adc_config0 = ((reg_adc_config0 & (~FLD_SCANT_MAX)) | ((1 * 2) << 4)); //scan_cnt = chn_cnt*2
 
     //The following logic is equivalent to a adc_set_clk(FLD_SAR_ADC_CLK_DIV)
-    reg_adc_config1 = ((reg_adc_config1 & FLD_SAR_ADC_CLK_DIV) | 1); //div=1, adc digital clk = 24MHz/div.(crystal = 24MHz)
+    reg_adc_config1 = ((reg_adc_config1 & ~FLD_SAR_ADC_CLK_DIV) | 1); //div=1, adc digital clk = 24MHz/div.(crystal = 24MHz)
 
     //The following logic is equivalent to a reg_adc_capture_state(ADC_M_CHANNEL)
     reg_adc_config2 |= BIT(ADC_M_CHANNEL);
@@ -977,7 +977,7 @@ _attribute_ram_code_sec_noinline_ void adc_anti_aging_mode_ramcode_for_asm(void)
     reg_adc_config0 = ((reg_adc_config0 & (~FLD_SCANT_MAX)) | ((1 * 2) << 4)); //scan_cnt = chn_cnt*2
 
     //The following logic is equivalent to a adc_set_clk(FLD_SAR_ADC_CLK_DIV)
-    reg_adc_config1 = ((reg_adc_config1 & FLD_SAR_ADC_CLK_DIV) | 1); //div=1, adc digital clk = 24MHz/div.(crystal = 24MHz)
+    reg_adc_config1 = ((reg_adc_config1 & ~FLD_SAR_ADC_CLK_DIV) | 1); //div=1, adc digital clk = 24MHz/div.(crystal = 24MHz)
 
     //The following logic is equivalent to a reg_adc_capture_state(ADC_M_CHANNEL)
     reg_adc_config2 |= BIT(ADC_M_CHANNEL);

@@ -100,6 +100,20 @@ u32 tlksdk_thd_getInsertTask1PostTick(void);
  */
 bool tlksdk_thd_checkIsInsertTask1(void);
 
+/**
+ * @brief       Check whether the thread insert task 1 is currently occupying
+ *              the RF (started, waiting for its post tick).
+ *              Unlike tlksdk_thd_checkIsInsertTask1(), which is based on
+ *              "cur_task_oft" and stays true during the "post-to-new-task"
+ *              gap, this check is based on the link-layer state and is only
+ *              true inside the real insert window. It is safe to call from
+ *              the power management (thread) context.
+ * @param       none
+ * @return      true  - insert task 1 is running (RF owned by 802.15.4)
+ *              false - otherwise
+ */
+bool tlksdk_thd_insertTask1IsActive(void);
+
 extern void (*thd_insertTsk_switch_to_802154_cb)(void);
 extern void (*thd_insertTsk_switch_to_ble_cb)(void);
 extern void (*tlksdk_switch_to_802154_rf_cb)(void);

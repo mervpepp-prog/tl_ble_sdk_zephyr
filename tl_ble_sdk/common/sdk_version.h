@@ -33,7 +33,7 @@
 #define SOFT_STRUCTURE       0
 #define MAJOR_VERSION        4
 #define MINOR_VERSION        8
-#define PATCH_NUM            1
+#define PATCH_NUM            2
 
 #define CUSTOM_MAJOR_VERSION 0
 #define CUSTOM_MINOR_VERSION 0
@@ -68,5 +68,4 @@
  * @param[in]  number - the size of the buffer.
  * @return     the actual length of version string.
  */
-unsigned char tlk_get_sdk_version(unsigned char *pbuf, unsigned char number);
-#define blc_get_sdk_version tlk_get_sdk_version
+unsigned char blc_get_sdk_version(unsigned char *pbuf, unsigned char number);

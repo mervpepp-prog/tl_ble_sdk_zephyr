@@ -22,7 +22,7 @@
  *
  *******************************************************************************************************/
 #include "sdk_version.h"
-#include <string.h>
+
 /*
  * Release Tool need to change this macro to match the release version,
  * the replace rules is: "$$$B85m_driver_sdk_"#sdk_version_num"$$$", The "#sdk_version_num"
@@ -39,7 +39,7 @@ volatile __attribute__((section(".sdk_version"))) unsigned char custom_version[]
 #endif
 
 
-unsigned char tlk_get_sdk_version(unsigned char *pbuf, unsigned char pbuf_size)
+unsigned char blc_get_sdk_version(unsigned char *pbuf, unsigned char pbuf_size)
 {
     /*
     struct {

@@ -686,11 +686,6 @@ extern const rf_power_level_e rf_power_Level_list[70];
 extern rf_mode_e              g_rfmode;
 extern rf_crc_config_t        rf_crc_config[3];
 
-typedef enum    //BLE SDK move the macro here
-{
-    RF_TX_NORMAL_POWER = 0,
-    RF_TX_HIGH_POWER   = 1,
-} rf_tx_power_e;
 /**********************************************************************************************************************
  *                                         RF function declaration                                                    *
  *********************************************************************************************************************/
@@ -699,7 +694,7 @@ typedef enum    //BLE SDK move the macro here
  * @brief     This function performs to get rf baseband timer tick.
  * @return    rf baseband timer tick value.
  */
-static inline unsigned int rf_bb_timer_get_tick(void)
+static _always_inline unsigned int rf_bb_timer_get_tick(void)
 {
     return reg_bb_timer_tick;
 }
@@ -720,7 +715,7 @@ static _always_inline unsigned char rf_receiving_flag(void)
  * @param[in]   mask    - Options that need to be enabled.
  * @return      Yes: 1, NO: 0.
  */
-static inline void rf_set_irq_mask(rf_irq_e mask)
+static _always_inline void rf_set_irq_mask(rf_irq_e mask)
 {
     BM_SET(reg_rf_irq_mask, mask);
     BM_SET(reg_rf_ll_irq_mask_h, (mask & 0xff0000) >> 16);
@@ -733,7 +728,7 @@ static inline void rf_set_irq_mask(rf_irq_e mask)
  * @param[in]   mask    - RX/TX irq value.
  * @return      none.
  */
-static inline void rf_clr_irq_mask(rf_irq_e mask)
+static _always_inline void rf_clr_irq_mask(rf_irq_e mask)
 {
     BM_CLR(reg_rf_irq_mask, mask);
     BM_CLR(reg_rf_ll_irq_mask_h, (mask & 0xff0000) >> 16);
@@ -747,7 +742,7 @@ static inline void rf_clr_irq_mask(rf_irq_e mask)
  * @retval      non-zero      -  the interrupt occurred.
  * @retval      zero  -  the interrupt did not occur.
  */
-static inline unsigned int rf_get_irq_status(rf_irq_e status)
+static _always_inline unsigned int rf_get_irq_status(rf_irq_e status)
 {
     return ((unsigned int)(BM_IS_SET(reg_rf_irq_status, status) | BM_IS_SET((reg_rf_irq_status_h << 16), status) | BM_IS_SET((reg_rf_irq_status_h1 << 24), status)));
 }
@@ -760,7 +755,7 @@ static inline unsigned int rf_get_irq_status(rf_irq_e status)
  *          manually clear this flag bit so as to avoid misjudgment.
  *@return   none.
  */
-static inline void rf_clr_irq_status(rf_irq_e status)
+static _always_inline void rf_clr_irq_status(rf_irq_e status)
 {
     reg_rf_irq_status    = status;
     reg_rf_irq_status_h  = (status & 0xff0000) >> 16;
@@ -772,7 +767,7 @@ static inline void rf_clr_irq_status(rf_irq_e status)
  * @param[in]   acc   - the value of access code.
  * @return      none.
  */
-static inline void rf_access_code_comm(unsigned int acc)
+static _always_inline void rf_access_code_comm(unsigned int acc)
 {
     reg_rf_access_code = acc;
     //The following two lines of code are for trigger access code in S2,S8 mode.It has no effect on other modes.
@@ -790,7 +785,7 @@ static inline void rf_access_code_comm(unsigned int acc)
  *                        all access_code channels (0~7) are enabled.
  * @return      none
  */
-static inline void rf_rx_acc_code_pipe_en(rf_channel_e pipe)
+static _always_inline void rf_rx_acc_code_pipe_en(rf_channel_e pipe)
 {
     reg_rf_modem_rx_ctrl_1 = pipe; //rx_access_code_chn_en
 }
@@ -802,7 +797,7 @@ static inline void rf_rx_acc_code_pipe_en(rf_channel_e pipe)
  *                        If "enable" is set as 0x7 (i.e. 0111),the access_code channel (7) is enabled.
  * @return      none
  */
-static inline void rf_tx_acc_code_pipe_en(unsigned char pipe)
+static _always_inline void rf_tx_acc_code_pipe_en(unsigned char pipe)
 {
     write_reg8(0x170215, ((read_reg8(0x170215) & 0xf8) | (pipe&0x07)) | BIT(4)); //Tx_Channel_man[2:0]
 }
@@ -835,7 +830,7 @@ static _always_inline void rf_set_tx_rx_off_auto_mode(void)
  * @param[in]   fifo_byte_size - The length of one dma fifo,the range is 1~0xffff(the corresponding number of fifo bytes is fifo_byte_size).
  * @return      none
  */
-static inline void rf_set_rx_dma_fifo_size(unsigned short fifo_byte_size)
+static _always_inline void rf_set_rx_dma_fifo_size(unsigned short fifo_byte_size)
 {
     reg_rf_bb_rx_size   = fifo_byte_size & 0xff;
     reg_rf_bb_rx_size_h = fifo_byte_size >> 8;
@@ -847,7 +842,7 @@ static inline void rf_set_rx_dma_fifo_size(unsigned short fifo_byte_size)
  *                           The number of FIFOs enabled is the value of wptr_mask plus 1.(0x01,0x02,0x04,0x08,0x10,0x20)
  * @return      none
  */
-static inline void rf_set_rx_dma_fifo_num(unsigned char fifo_num)
+static _always_inline void rf_set_rx_dma_fifo_num(unsigned char fifo_num)
 {
     reg_rf_rx_wptr_mask = fifo_num;
 }
@@ -861,7 +856,7 @@ static inline void rf_set_rx_dma_fifo_num(unsigned char fifo_num)
  * @return      none
  * @note        rx_addr:must be aligned by word (4 bytes), otherwise the program will enter an exception.
  */
-static inline void rf_set_rx_buffer(unsigned char *rx_addr)
+static _always_inline void rf_set_rx_buffer(unsigned char *rx_addr)
 {
     rx_addr += 4;
     rf_dma_set_dst_address(RF_RX_DMA, (unsigned int)(rx_addr));
@@ -872,7 +867,7 @@ static inline void rf_set_rx_buffer(unsigned char *rx_addr)
  * @param[in]   fifo_dep - the number of dma fifo is 2 to the power of fifo_dep.
  * @return      none
  */
-static inline void rf_set_tx_dma_fifo_num(unsigned char fifo_num)
+static _always_inline void rf_set_tx_dma_fifo_num(unsigned char fifo_num)
 {
     reg_rf_bb_tx_chn_dep = fifo_num; //tx_chn_dep = 2^2 =4 (have 4 fifo)
 }
@@ -882,7 +877,7 @@ static inline void rf_set_tx_dma_fifo_num(unsigned char fifo_num)
  * @param[in]   fifo_byte_size - the size of each dma fifo.
  * @return      none
  */
-static inline void rf_set_tx_dma_fifo_size(unsigned short fifo_byte_size)
+static _always_inline void rf_set_tx_dma_fifo_size(unsigned short fifo_byte_size)
 {
     reg_rf_bb_tx_size   = fifo_byte_size & 0xff; //tx_idx_addr = {tx_chn_adr*bb_tx_size,4'b0}// in this setting the max data in one dma buffer is 0x20<<4.And the The product of fifo_dep and bytesize cannot exceed 0xfff.
     reg_rf_bb_tx_size_h = fifo_byte_size >> 8;
@@ -895,7 +890,7 @@ static inline void rf_set_tx_dma_fifo_size(unsigned short fifo_byte_size)
  * @return  none.
  * @note       Attention:It is not necessary to call this function to adjust the settling time in the normal sending state.
  */
-static inline void rf_set_tx_settle_time(unsigned short tx_stl_us)
+static _always_inline void rf_set_tx_settle_time(unsigned short tx_stl_us)
 {
     tx_stl_us &= 0x0fff;
     write_reg16(0x170204, (read_reg16(0x170204) & 0xf000) | (tx_stl_us - 1));
@@ -908,7 +903,7 @@ static inline void rf_set_tx_settle_time(unsigned short tx_stl_us)
  * @return  none.
  * @note       Attention:It is not necessary to call this function to adjust the settling time in the normal packet receiving state.
  */
-static inline void rf_set_rx_settle_time(unsigned short rx_stl_us)
+static _always_inline void rf_set_rx_settle_time(unsigned short rx_stl_us)
 {
     rx_stl_us &= 0x0fff;
     write_reg16(0x17020c, (read_reg16(0x17020c) & 0xf000) | (rx_stl_us - 1));
@@ -920,7 +915,7 @@ static inline void rf_set_rx_settle_time(unsigned short rx_stl_us)
  * @return      none.
  * @note        Attention:when CRC length is 0,TX need to disable CRC.
  */
-static inline void rf_set_crc_len(unsigned char len)
+static _always_inline void rf_set_crc_len(unsigned char len)
 {
     reg_rf_crc_config2 = ((reg_rf_crc_config2 & (~FLD_RF_CRC_LENGTH)) | len);
 }
@@ -943,7 +938,7 @@ static _always_inline void rf_set_crc_init_value(unsigned int init_value)
  *              the crc_poly value would be 0x65b.
  * @return      none.
  */
-static inline void rf_set_crc_poly(unsigned int poly)
+static _always_inline void rf_set_crc_poly(unsigned int poly)
 {
     reg_rf_crc_poly = poly;
 }
@@ -956,7 +951,7 @@ static inline void rf_set_crc_poly(unsigned int poly)
  *              zigbee:The starting position is the first byte after SHR.
  * @return      none.
  */
-static inline void rf_set_crc_start_cal_byte_pos(unsigned char byte_pos)
+static _always_inline void rf_set_crc_start_cal_byte_pos(unsigned char byte_pos)
 {
     reg_rf_crc_config1 = (reg_rf_crc_config1 & (~FLD_RF_CRC_START_BYTE)) | byte_pos;
 }
@@ -966,7 +961,7 @@ static inline void rf_set_crc_start_cal_byte_pos(unsigned char byte_pos)
  * @param[in]   xor_value - XOR mask for CRC result (for no mask, should be 0)
  * @return      none.
  */
-static inline void rf_set_crc_xor_out(unsigned int xor_value)
+static _always_inline void rf_set_crc_xor_out(unsigned int xor_value)
 {
     reg_rf_crc_xorout = xor_value;
 }
@@ -976,7 +971,7 @@ static inline void rf_set_crc_xor_out(unsigned int xor_value)
  * @param[in]   order - CRC output byte order (1:MSByte first,0:LSByte first)
  * @return      none.
  */
-static inline void rf_set_crc_byte_order(unsigned char order)
+static _always_inline void rf_set_crc_byte_order(unsigned char order)
 {
     reg_rf_crc_config2 = (reg_rf_crc_config2 & 0xf7) | (order << 3);
 }
@@ -986,7 +981,7 @@ static inline void rf_set_crc_byte_order(unsigned char order)
  * @param[in]   config - crc config address pointer
  * @return      none.
  */
-__attribute__((always_inline)) static inline void rf_set_crc_config(const rf_crc_config_t *config)
+static _always_inline void rf_set_crc_config(const rf_crc_config_t *config)
 {
     rf_set_crc_init_value(config->init_value);
     rf_set_crc_poly(config->poly);
@@ -1001,7 +996,7 @@ __attribute__((always_inline)) static inline void rf_set_crc_config(const rf_crc
  * @param[in]   pipe_id -   The number of tx fifo.0<= pipe_id <=5.
  * @return      The write pointer of the tx.
  */
-static inline unsigned char rf_get_tx_wptr(unsigned char pipe_id)
+static _always_inline unsigned char rf_get_tx_wptr(unsigned char pipe_id)
 {
     return reg_rf_dma_tx_wptr(pipe_id);
 }
@@ -1012,7 +1007,7 @@ static inline unsigned char rf_get_tx_wptr(unsigned char pipe_id)
  * @param[in]   wptr    -   The pointer of write in tx terminal.
  * @return      none
  */
-static inline void rf_set_tx_wptr(unsigned char pipe_id, unsigned char wptr)
+static _always_inline void rf_set_tx_wptr(unsigned char pipe_id, unsigned char wptr)
 {
     reg_rf_dma_tx_wptr(pipe_id) = wptr;
 }
@@ -1022,7 +1017,7 @@ static inline void rf_set_tx_wptr(unsigned char pipe_id, unsigned char wptr)
  * @param[in]   pipe_id -   The number of tx DMA.0<= pipe_id <=5.
  * @return  none.
  */
-static inline void rf_clr_tx_wptr(unsigned char pipe_id)
+static _always_inline void rf_clr_tx_wptr(unsigned char pipe_id)
 {
     reg_rf_dma_tx_wptr(pipe_id) = 0;
 }
@@ -1032,7 +1027,7 @@ static inline void rf_clr_tx_wptr(unsigned char pipe_id)
  * @param[in]   pipe_id -The number of tx pipe.0<= pipe_id <=5.
  * @return      The read pointer of the tx.
  */
-static inline unsigned char rf_get_tx_rptr(unsigned char pipe_id)
+static _always_inline unsigned char rf_get_tx_rptr(unsigned char pipe_id)
 {
     return reg_rf_dma_tx_rptr(pipe_id);
 }
@@ -1042,7 +1037,7 @@ static inline unsigned char rf_get_tx_rptr(unsigned char pipe_id)
  * @param[in]   pipe_id -   The number of tx DMA.0<= pipe_id <=5.
  * @return  none.
  */
-static inline void rf_clr_tx_rptr(unsigned char pipe_id)
+static _always_inline void rf_clr_tx_rptr(unsigned char pipe_id)
 {
     reg_rf_dma_tx_rptr(pipe_id) = 0x80;
 }
@@ -1051,7 +1046,7 @@ static inline void rf_clr_tx_rptr(unsigned char pipe_id)
  * @brief   This function serve to get the pointer of read in rx terminal.
  * @return  wptr    -   The pointer of rx_rptr.
  */
-static inline unsigned char rf_get_rx_rptr(void)
+static _always_inline unsigned char rf_get_rx_rptr(void)
 {
     return reg_rf_dma_rx_rptr;
 }
@@ -1060,7 +1055,7 @@ static inline unsigned char rf_get_rx_rptr(void)
  * @brief   This function serve to clear read pointer of rx terminal.
  * @return  none.
  */
-static inline void rf_clr_rx_rptr(void)
+static _always_inline void rf_clr_rx_rptr(void)
 {
     write_reg8(0x1708f5, 0x80); //clear rptr
 }
@@ -1069,7 +1064,7 @@ static inline void rf_clr_rx_rptr(void)
  * @brief   This function serve to get the pointer of write in rx terminal.
  * @return  wptr    -   The pointer of rx_wptr.
  */
-static inline unsigned char rf_get_rx_wptr(void)
+static _always_inline unsigned char rf_get_rx_wptr(void)
 {
     return reg_rf_dma_rx_wptr;
 }
@@ -1276,7 +1271,7 @@ void rf_set_access_code_len(unsigned char byte_len);
  * @param[in]   timeout_us  -   rx_timeout after timeout_us us,The maximum of this param is 0xfff.
  * @return      none.
  */
-static inline void rf_set_rx_timeout(unsigned short timeout_us)
+static _always_inline void rf_set_rx_timeout(unsigned short timeout_us)
 {
     reg_rf_rx_timeout = timeout_us - 1;
 }
@@ -1285,7 +1280,7 @@ static inline void rf_set_rx_timeout(unsigned short timeout_us)
  * @brief   This function serves to disable RF rx timeout.
  * @return  none.
  */
-static inline void rf_dis_rx_timeout(void)
+static _always_inline void rf_dis_rx_timeout(void)
 {
     reg_rf_ll_ctrl_1 &= ~(FLD_RF_RX_TIMEOUT_EN);
 }
@@ -1420,7 +1415,7 @@ void rf_set_rccal_cal_val(rf_rccal_cal_t rccal_cal);
  * @return     none.
  * @note       Attention:It is not necessary to call this function to adjust the wait time in the rx2tx process.
  */
-static inline void rf_set_tx_wait_time(unsigned short tx_wait_us)
+static _always_inline void rf_set_tx_wait_time(unsigned short tx_wait_us)
 {
     if (tx_wait_us > 0x0fff) {
         tx_wait_us = 0x0fff;
@@ -1434,7 +1429,7 @@ static inline void rf_set_tx_wait_time(unsigned short tx_wait_us)
  * @return     none.
  * @note       Attention:It is not necessary to call this function to adjust the wait time in the tx2rx process.
  */
-static inline void rf_set_rx_wait_time(unsigned short rx_wait_us)
+static _always_inline void rf_set_rx_wait_time(unsigned short rx_wait_us)
 {
     if (rx_wait_us > 0x0fff) {
         rx_wait_us = 0x0fff;

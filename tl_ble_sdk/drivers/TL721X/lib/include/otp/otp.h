@@ -32,6 +32,14 @@
 void otp_get_ieee_addr(unsigned char *buf);
 
 /**
+* @brief      This function servers to get chip id from OTP memory.
+* @param[in]  chip_id_buff - store chip id. Chip ID is 16 bytes.
+* @note       This api will set otp active mode, after read chip id, otp will be set to deep standby mode.
+* 
+*/
+void otp_get_chip_id(unsigned int *chip_id_buff);
+
+/**
  * @brief      This function is used to calib ADC 1.2V vref.
  * @param[in]  none
  * @return     DRV_API_SUCCESS - the calibration value update, DRV_API_FAILURE - the calibration value is not update.

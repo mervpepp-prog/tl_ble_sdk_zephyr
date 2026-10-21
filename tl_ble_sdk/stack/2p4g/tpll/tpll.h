@@ -61,7 +61,7 @@ typedef struct
     unsigned int  noack_start_bit;
 } TPLL_GenericHeader_t;
 
-extern TPLL_GenericHeader_t TPLL_GenericHeader;
+extern TPLL_GenericHeader_t g_TPLL_GenericHeader;
 
 typedef struct
 {

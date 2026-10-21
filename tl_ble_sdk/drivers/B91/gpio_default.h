@@ -866,7 +866,7 @@
  *             do not use pull-up or pull-down resistance on the board in the process of practical
  *             application because it may have the risk of electric leakage .
  */
-static inline void gpio_analog_resistance_init(void)
+static _attribute_no_inline_ void gpio_analog_resistance_init(void)
 {
     //A<3:0>
     analog_write_reg8(0x0e, PULL_WAKEUP_SRC_PA0 | (PULL_WAKEUP_SRC_PA1 << 2) | (PULL_WAKEUP_SRC_PA2 << 4) | (PULL_WAKEUP_SRC_PA3 << 6));

@@ -58,10 +58,8 @@ _attribute_data_retention_ u32 flash_sector_simple_sdp_att = FLASH_SDP_ATT_ADDRE
 _attribute_data_retention_ unsigned int  blc_flash_mid    = 0;
 _attribute_data_retention_ unsigned int  blc_flash_vendor = 0;
 _attribute_data_retention_ unsigned char blc_flash_capacity;
-#if MCU_RUN_IN_NVM
 extern void write_storage_from_ram(unsigned int addr, unsigned int len, unsigned int *data);
 extern void read_storage_to_ram(unsigned int addr, unsigned int len, unsigned char *data);
-#endif
 /**
  * @brief       This function is used to read flash mid, get flash vendor, and set flash capacity
  * @param[in]   none
@@ -325,8 +323,12 @@ void blc_app_loadCustomizedParameters_normal(void)
 #endif
 #if (MCU_CORE_TYPE == MCU_CORE_TL322X)
     /******get sar adc calibration value from EFUSE********/
-    extern drv_api_status_e efuse_calib_sar_adc_vref(void);
-    efuse_calib_sar_adc_vref();
+    extern drv_api_status_e efuse_calib_sar0_gpio_vref(void);
+    extern drv_api_status_e efuse_calib_sar0_vbat_vref(void);
+    extern drv_api_status_e efuse_calib_sar1_gpio_vref(void);
+    efuse_calib_sar0_gpio_vref();
+    efuse_calib_sar0_vbat_vref();
+    efuse_calib_sar1_gpio_vref();
     /******get sd_adc calibration value from EFUSE********/
     extern drv_api_status_e efuse_calib_sd_adc_vref(void);
     efuse_calib_sd_adc_vref();

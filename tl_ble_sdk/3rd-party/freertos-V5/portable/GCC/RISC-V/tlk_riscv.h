@@ -143,19 +143,33 @@ static inline unsigned char mtimer_is_irq_enable(void)
 #endif
 extern void entry_irq_all(func_isr_t func, unsigned int src);
 
-#define PLIC_ISR_REGISTER_OS(isr, irq_num)                                                                                                     \
-__attribute__((section(".ram_code")))  __attribute__((noinline)) __attribute__((naked)) void ISR_ENTRY_NAME(irq_num)(void) __attribute__ ((aligned(4)));                    \
-void ISR_ENTRY_NAME(irq_num)(void) {                                                                                                        \
-__asm__("c.addi sp,-16");                                                                                                               \
-__asm__("c.swsp ra,0(sp)");                                                                                                             \
-__asm__("c.swsp a0,4(sp)");                                                                                                             \
-__asm__("c.swsp a1,8(sp)");                                                                                                             \
-entry_irq_all(isr,irq_num);                                                                                                             \
-__asm__("c.lwsp ra,0(sp)");                                                                                                             \
-__asm__("c.lwsp a0,4(sp)");                                                                                                             \
-__asm__("c.lwsp a1,8(sp)");                                                                                                             \
-__asm__("c.addi sp,16");                                                                                                                \
-__asm__("mret");                                                                                                                        \
+/* Naked PLIC ISR entry: the whole body must be ONE basic asm block. With
+ * separate asm statements around a C call, GCC may emit argument-setup code
+ * (e.g. lui/mv through a5 at -O0) that clobbers an interrupted task register
+ * before entry_irq_all saves the task context. The keep-pointer below marks
+ * the handler as referenced so the compiler cannot drop it. */
+#define TLK_ASM_STRINGIFY_LITERAL(value) #value
+#define TLK_ASM_STRINGIFY(value)         TLK_ASM_STRINGIFY_LITERAL(value)
+#define TLK_ISR_KEEP_NAME_LITERAL(irq_num) tlkIsrKeep_##irq_num
+#define TLK_ISR_KEEP_NAME(irq_num)       TLK_ISR_KEEP_NAME_LITERAL(irq_num)
+#define PLIC_ISR_REGISTER_OS(isr, irq_num)                                                                                                \
+static const func_isr_t TLK_ISR_KEEP_NAME(irq_num) __attribute__((used)) = isr;                                                           \
+__attribute__((section(".ram_code"), noinline, naked, aligned(4))) void ISR_ENTRY_NAME(irq_num)(void);                                    \
+void ISR_ENTRY_NAME(irq_num)(void) {                                                                                                    \
+    __asm__(                                                                                                                              \
+        "addi sp, sp, -16\n"                                                                                                             \
+        "sw   ra, 0(sp)\n"                                                                                                               \
+        "sw   a0, 4(sp)\n"                                                                                                               \
+        "sw   a1, 8(sp)\n"                                                                                                               \
+        "la   a0, " #isr "\n"                                                                                                            \
+        "li   a1, " TLK_ASM_STRINGIFY(irq_num) "\n"                                                                                      \
+        "call entry_irq_all\n"                                                                                                          \
+        "lw   ra, 0(sp)\n"                                                                                                               \
+        "lw   a0, 4(sp)\n"                                                                                                               \
+        "lw   a1, 8(sp)\n"                                                                                                               \
+        "addi sp, sp, 16\n"                                                                                                              \
+        "mret\n"                                                                                                                         \
+    );                                                                                                                                   \
 }
 #endif //#if (OS_SEPARATE_STACK_SPACE)
 
